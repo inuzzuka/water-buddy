@@ -1,17 +1,20 @@
-import ScreenContent from '@/components/ScreenContent';
-import { Text, View } from 'react-native';
+import QuickAddButtons from '@/components/features/QuickAddButtons';
+import WaterIntakeDisplay from '@/components/features/WaterIntakeDisplay';
+import ScreenContent from '@/components/layout/ScreenContent';
+import { useWaterBuddyContext } from '@/context/WaterBuddyContext';
 
 export default function Ritual() {
+  const { goal, logDrink } = useWaterBuddyContext();
+
   return (
     <ScreenContent>
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Text>Ritual</Text>
-      </View>
+      <WaterIntakeDisplay consumedMl={goal?.consumed_ml ?? 0} goalMl={goal?.goal_ml ?? 2500} />
+      <QuickAddButtons
+        onQuickAdd={() => logDrink(400, 'Quick Add')}
+        onOther={() => {
+          /* open modal later */
+        }}
+      />
     </ScreenContent>
   );
 }

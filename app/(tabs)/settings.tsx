@@ -1,4 +1,4 @@
-import ScreenContent from '@/components/ScreenContent';
+import ScreenContent from '@/components/layout/ScreenContent';
 import { Text, View } from 'react-native';
 
 export default function Settings() {

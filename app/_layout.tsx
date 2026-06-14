@@ -1,4 +1,5 @@
 import { colors } from '@/constants/colors';
+import { WaterBuddyProvider } from '@/context/WaterBuddyContext';
 import { NunitoSans_400Regular, NunitoSans_700Bold, useFonts } from '@expo-google-fonts/nunito-sans';
 import { PlusJakartaSans_400Regular } from '@expo-google-fonts/plus-jakarta-sans';
 
@@ -27,10 +28,12 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" backgroundColor={colors.background} />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
-        <Stack.Screen name="(tabs)" />
-      </Stack>
+      <WaterBuddyProvider>
+        <StatusBar style="dark" backgroundColor={colors.background} />
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
+          <Stack.Screen name="(tabs)" />
+        </Stack>
+      </WaterBuddyProvider>
     </SafeAreaProvider>
   );
 }

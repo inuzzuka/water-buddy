@@ -1,5 +1,5 @@
-import AppFooter from '@/components/AppFooter';
-import AppHeader from '@/components/AppHeader';
+import AppFooter from '@/components/layout/AppFooter';
+import AppHeader from '@/components/layout/AppHeader';
 import { colors } from '@/constants/colors';
 import { Tabs } from 'expo-router';
 import { Image, StyleSheet, View } from 'react-native';
