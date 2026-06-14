@@ -1,4 +1,5 @@
 import AddWaterModal from '@/components/features/AddWaterModal';
+import BuddyMascot from '@/components/features/BuddyMascot';
 import BuddyTipCard from '@/components/features/BuddyTipCard';
 import QuickAddButtons from '@/components/features/QuickAddButtons';
 import { LastSipCard, StreakCard } from '@/components/features/StatCards';
@@ -14,6 +15,7 @@ export default function Ritual() {
 
   return (
     <ScreenContent>
+      <BuddyMascot size={160} bubble="Good morning, Andjela! Time for a refreshing sip?" />
       <WaterIntakeDisplay consumedMl={goal?.consumed_ml ?? 0} goalMl={goal?.goal_ml ?? 2500} />
       <QuickAddButtons onQuickAdd={() => logDrink(400, 'Quick Add')} onOther={() => setModalVisible(true)} />
       <View style={{ flexDirection: 'row', gap: 12, paddingHorizontal: 24, marginVertical: 16 }}>

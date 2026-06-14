@@ -17,5 +17,6 @@ export default function ScreenContent({ children }: { children: React.ReactNode 
 const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
+    paddingTop: 16,
   },
 });
