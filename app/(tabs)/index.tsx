@@ -1,4 +1,5 @@
 import AddWaterModal from '@/components/features/AddWaterModal';
+import BuddyTipCard from '@/components/features/BuddyTipCard';
 import QuickAddButtons from '@/components/features/QuickAddButtons';
 import { LastSipCard, StreakCard } from '@/components/features/StatCards';
 import WaterIntakeDisplay from '@/components/features/WaterIntakeDisplay';
@@ -8,7 +9,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 export default function Ritual() {
-  const { goal, logs, logDrink } = useWaterBuddyContext();
+  const { goal, logs, logDrink, tip } = useWaterBuddyContext();
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
@@ -23,6 +24,7 @@ export default function Ritual() {
         />
         <LastSipCard lastSipAt={logs[0]?.logged_at ?? null} />
       </View>
+      {tip && <BuddyTipCard content={tip.content} />}
       <AddWaterModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
