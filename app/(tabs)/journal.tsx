@@ -1,17 +1,13 @@
 import ScreenContent from '@/components/layout/ScreenContent';
-import { Text, View } from 'react-native';
+import SegmentedControl from '@/components/ui/SegmentedControl';
+import { useState } from 'react';
 
 export default function Journal() {
+  const [period, setPeriod] = useState('Week');
+
   return (
     <ScreenContent>
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Text>Journal</Text>
-      </View>
+      <SegmentedControl options={['Week', 'Month']} selected={period} onChange={setPeriod} />
     </ScreenContent>
   );
 }
