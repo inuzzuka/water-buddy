@@ -1,4 +1,4 @@
-import { useToday, useWaterBuddy } from '@/db/hooks/useWaterBuddy';
+import { useToday, useWaterBuddy, WaterBuddyDB } from '@/db/hooks/useWaterBuddy';
 import { BuddyTipRepository } from '@/db/repositories/BuddyTipRepository';
 import { UserRepository } from '@/db/repositories/UserRepository';
 import { BuddyTip, DailyGoal, WaterLog } from '@/db/types';
@@ -11,6 +11,7 @@ type WaterBuddyContextType = {
   logs: WaterLog[];
   remaining: number | null;
   tip: BuddyTip | null;
+  db: WaterBuddyDB;
   logDrink: (amount_ml: number, label?: string) => Promise<void>;
   refresh: () => void;
 };
@@ -59,7 +60,7 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
 
   return (
     <WaterBuddyContext.Provider
-      value={{ ready: ready && userId !== null, userId, goal, logs, remaining, tip, logDrink, refresh }}>
+      value={{ ready: ready && userId !== null, userId, goal, logs, remaining, tip, db, logDrink, refresh }}>
       {children}
     </WaterBuddyContext.Provider>
   );
