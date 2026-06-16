@@ -1,12 +1,20 @@
+import BuddyProfile from '@/components/features/BuddyProfile';
 import ScreenContent from '@/components/layout/ScreenContent';
-import { Text, View } from 'react-native';
+import { useWaterBuddyContext } from '@/context/WaterBuddyContext';
 
 export default function Settings() {
+  const { user } = useWaterBuddyContext();
+
   return (
     <ScreenContent>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent' }}>
-        <Text>Settings</Text>
-      </View>
+      {user && (
+        <BuddyProfile
+          user={user}
+          onManageAccount={() => {
+            /* navigate to manage account later */
+          }}
+        />
+      )}
     </ScreenContent>
   );
 }

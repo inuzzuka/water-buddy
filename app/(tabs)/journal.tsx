@@ -7,18 +7,18 @@ import { useWaterBuddyContext } from '@/context/WaterBuddyContext';
 import { useEffect, useState } from 'react';
 
 export default function Journal() {
-  const { userId, db, goal, logs } = useWaterBuddyContext();
+  const { user, db, goal, logs } = useWaterBuddyContext();
   const [period, setPeriod] = useState('Week');
   const [chartData, setChartData] = useState<{ date: string; total_ml: number }[]>([]);
   useEffect(() => {
-    if (!userId) return;
+    if (!user?.id) return;
     const days = period === 'Week' ? 7 : 28;
     const from = new Date();
     from.setDate(from.getDate() - days + 1);
     const fromDate = from.toISOString().split('T')[0];
     const toDate = new Date().toISOString().split('T')[0];
-    db.waterLogs.getDailyTotals(userId, fromDate, toDate).then(setChartData);
-  }, [userId, period]);
+    db.waterLogs.getDailyTotals(user.id, fromDate, toDate).then(setChartData);
+  }, [user?.id, period]);
 
   return (
     <ScreenContent>
