@@ -11,7 +11,7 @@ export default function TabsLayout() {
   return (
     <View style={styles.container}>
       {/* Fixed background */}
-      <Image source={require('@/assets/images/background.png')} style={styles.background} resizeMode="cover" />
+      <Image source={require('@/assets/images/background-1.png')} style={styles.background} resizeMode="cover" />
 
       {/* Header extends into status bar */}
       <View style={[styles.headerWrapper, { paddingTop: insets.top, backgroundColor: colors.background }]}>
