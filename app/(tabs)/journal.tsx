@@ -1,6 +1,7 @@
 import MotivationCard from '@/components/features/MotivationCard';
 import TodayLogs from '@/components/features/TodayLogs';
 import WaterBarChart from '@/components/features/WaterBarChart';
+import WeeklyFlow from '@/components/features/WeeklyFlow';
 import ScreenContent from '@/components/layout/ScreenContent';
 import { useWaterBuddyContext } from '@/context/WaterBuddyContext';
 import { useEffect, useState } from 'react';
@@ -21,6 +22,7 @@ export default function Journal() {
 
   return (
     <ScreenContent>
+      <WeeklyFlow data={chartData} />
       <WaterBarChart data={chartData} goalMl={goal?.goal_ml ?? 2500} period={period} onPeriodChange={setPeriod} />
       <TodayLogs logs={logs} />
       <MotivationCard consumed_ml={goal?.consumed_ml ?? 0} goal_ml={goal?.goal_ml ?? 2500} />

@@ -3,6 +3,7 @@ export const colors = {
   primaryDark: '#003C66',
   primaryLight: '#47A9FF',
   redLight: '#FFD9E5',
+  red: '#FF9EC5',
   redDark: '#7B2D42',
   background: '#F5FAFC',
   headerBorder: 'rgba(191, 199, 211, 0.3)',
