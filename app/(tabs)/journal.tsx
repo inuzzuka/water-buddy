@@ -1,3 +1,4 @@
+import MotivationCard from '@/components/features/MotivationCard';
 import TodayLogs from '@/components/features/TodayLogs';
 import WaterBarChart from '@/components/features/WaterBarChart';
 import ScreenContent from '@/components/layout/ScreenContent';
@@ -22,6 +23,7 @@ export default function Journal() {
     <ScreenContent>
       <WaterBarChart data={chartData} goalMl={goal?.goal_ml ?? 2500} period={period} onPeriodChange={setPeriod} />
       <TodayLogs logs={logs} />
+      <MotivationCard consumed_ml={goal?.consumed_ml ?? 0} goal_ml={goal?.goal_ml ?? 2500} />
     </ScreenContent>
   );
 }
