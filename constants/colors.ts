@@ -2,6 +2,8 @@ export const colors = {
   primary: '#0062A1',
   primaryDark: '#003C66',
   primaryLight: '#47A9FF',
+  redLight: '#FFD9E5',
+  redDark: '#7B2D42',
   background: '#F5FAFC',
   headerBorder: 'rgba(191, 199, 211, 0.3)',
   shadowColor: '#000',
