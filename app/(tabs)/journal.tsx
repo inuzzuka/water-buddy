@@ -1,10 +1,11 @@
+import TodayLogs from '@/components/features/TodayLogs';
 import WaterBarChart from '@/components/features/WaterBarChart';
 import ScreenContent from '@/components/layout/ScreenContent';
 import { useWaterBuddyContext } from '@/context/WaterBuddyContext';
 import { useEffect, useState } from 'react';
 
 export default function Journal() {
-  const { userId, db, goal } = useWaterBuddyContext();
+  const { userId, db, goal, logs } = useWaterBuddyContext();
   const [period, setPeriod] = useState('Week');
   const [chartData, setChartData] = useState<{ date: string; total_ml: number }[]>([]);
   useEffect(() => {
@@ -20,6 +21,7 @@ export default function Journal() {
   return (
     <ScreenContent>
       <WaterBarChart data={chartData} goalMl={goal?.goal_ml ?? 2500} period={period} onPeriodChange={setPeriod} />
+      <TodayLogs logs={logs} />
     </ScreenContent>
   );
 }

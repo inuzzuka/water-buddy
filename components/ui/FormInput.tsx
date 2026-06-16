@@ -14,7 +14,7 @@ export default function FormInput({ label, icon: Icon, ...props }: Props) {
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       <View style={styles.background}>
-        <View style={styles.iconCircle}>
+        <View>
           <IconButton icon={Icon} background />
         </View>
         <TextInput style={styles.input} placeholderTextColor={colors.tabInactive} {...props} />
@@ -40,19 +40,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    height: 58, // ← was 54
-    backgroundColor: '#EFF4F6',
+    height: 58,
+    backgroundColor: colors.lightGray,
     borderRadius: 9999,
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
-  },
-  iconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 9999,
-    backgroundColor: 'rgba(71, 169, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   input: {
     flex: 1,

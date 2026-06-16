@@ -8,5 +8,7 @@ export const colors = {
   tabActive: '#003C66',
   tabInactive: '#404751',
   tabActiveBg: '#47A9FF',
+  lightGray: '#EFF4F6',
+  black: '#171C1E',
   white: '#FFFFFF',
 };

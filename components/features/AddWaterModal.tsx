@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   title: {
     ...typography.h2,
     fontSize: 20,
-    color: colors.primaryDark,
+    color: colors.primary,
     marginBottom: 8,
   },
   checkboxRow: {
