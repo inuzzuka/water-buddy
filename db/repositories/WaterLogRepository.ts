@@ -74,11 +74,7 @@ export class WaterLogRepository extends BaseRepository<WaterLog> {
   }
 
   /** Daily ml totals over a date range — drives the Weekly/Monthly analytics chart. */
-  async getDailyTotals(
-    userId: number,
-    fromDate: string,
-    toDate: string,
-  ): Promise<{ date: string; total_ml: number }[]> {
+  async getDailyTotals(user: number, fromDate: string, toDate: string): Promise<{ date: string; total_ml: number }[]> {
     const db = await this.db();
     return db.getAllAsync<{ date: string; total_ml: number }>(
       `SELECT date(logged_at) AS date, SUM(amount_ml) AS total_ml
@@ -86,7 +82,7 @@ export class WaterLogRepository extends BaseRepository<WaterLog> {
        WHERE user_id = ? AND date(logged_at) BETWEEN ? AND ?
        GROUP BY date(logged_at)
        ORDER BY date(logged_at) ASC`,
-      userId,
+      user,
       fromDate,
       toDate,
     );
