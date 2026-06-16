@@ -10,8 +10,8 @@ import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SvgProps } from 'react-native-svg';
 
 const tabs: { name: string; href: Href; icon: React.FC<SvgProps> }[] = [
-  { name: 'Ritual', href: '/', icon: RitualIcon },
   { name: 'Journal', href: '/journal', icon: JournalIcon },
+  { name: 'Ritual', href: '/', icon: RitualIcon },
   { name: 'Settings', href: '/settings', icon: SettingsIcon },
 ];
 
