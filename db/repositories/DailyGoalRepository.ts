@@ -25,10 +25,19 @@ export class DailyGoalRepository extends BaseRepository<DailyGoal> {
 
   /** Update the user's daily ml target. */
   async setGoal(userId: number, goal_ml: number): Promise<void> {
-    await this.upsert({ user_id: userId, date: isoDate(), goal_ml, consumed_ml: 0, streak_days: 0, completed: 0 }, [
-      'user_id',
-      'date',
-    ]);
+    const db = await this.db();
+    await db.runAsync(
+      `INSERT INTO daily_goals (user_id, date, goal_ml, consumed_ml, streak_days, completed)
+       VALUES (?, ?, ?, 0, 0, 0)
+       ON CONFLICT(user_id, date) DO UPDATE SET
+        goal_ml = ?,
+        updated_at = ?`,
+      userId,
+      isoDate(),
+      goal_ml,
+      goal_ml,
+      now(),
+    );
   }
 
   /**
