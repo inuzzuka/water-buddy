@@ -13,6 +13,7 @@ export class SettingsRepository extends BaseRepository<AppSettings> {
     await this.upsert(
       {
         user_id: userId,
+        default_quick_add_ml: data.default_quick_add_ml ?? 400,
         dark_mode: data.dark_mode ?? 0,
         sound: data.sound ?? 1,
         updated_at: now(),

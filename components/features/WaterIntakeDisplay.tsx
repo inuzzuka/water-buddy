@@ -14,24 +14,35 @@ const BUBBLE_COLOR = 'white';
 
 function WaveCircle({ fillPercent }: { fillPercent: number }) {
   const waveAnim = useRef(new Animated.Value(0)).current;
+  const fillAnim = useRef(new Animated.Value(fillPercent)).current;
+  const fillRef = useRef(fillPercent);
 
   useEffect(() => {
     Animated.loop(
       Animated.timing(waveAnim, {
         toValue: 1,
-        duration: 6000, // slower — 6 seconds per cycle
-        easing: Easing.inOut(Easing.sin), // smooth sine ease — breathes in and out
+        duration: 6000,
+        easing: Easing.inOut(Easing.sin),
         useNativeDriver: false,
       }),
     ).start();
   }, []);
 
-  const fillY = SIZE - fillPercent * SIZE;
+  useEffect(() => {
+    Animated.timing(fillAnim, {
+      toValue: fillPercent,
+      duration: 800,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+    fillRef.current = fillPercent;
+  }, [fillPercent]);
+
   const waveHeight = 10;
 
-  const wavePath = (offset: number) => {
-    const segments = 4; // more segments so wave extends beyond SVG width
-    const segW = SIZE / 2; // smaller segments, wave is 2x wide
+  const wavePath = (fillY: number, offset: number) => {
+    const segments = 4;
+    const segW = SIZE / 2;
     let d = `M ${-SIZE + offset} ${fillY}`;
     for (let i = 0; i < segments * 2; i++) {
       const x1 = -SIZE + offset + i * segW + segW / 4;
@@ -50,11 +61,7 @@ function WaveCircle({ fillPercent }: { fillPercent: number }) {
           <Circle cx={RADIUS} cy={RADIUS} r={RADIUS} />
         </ClipPath>
       </Defs>
-
-      {/* Background circle */}
       <Circle cx={RADIUS} cy={RADIUS} r={RADIUS} fill={CIRCLE_BG} />
-
-      {/* Inner shadow — dark arc at top edge */}
       <Circle
         cx={RADIUS}
         cy={RADIUS}
@@ -65,21 +72,20 @@ function WaveCircle({ fillPercent }: { fillPercent: number }) {
         clipPath="url(#circleClip)"
       />
 
-      {/* Wave 1 (back - lighter) */}
       {fillPercent > 0 && (
         <AnimatedPath
-          animatedValue={waveAnim}
+          waveAnim={waveAnim}
+          fillAnim={fillAnim}
           wavePath={wavePath}
           fill={WAVE_LIGHT}
           phaseOffset={0}
           clipPath="url(#circleClip)"
         />
       )}
-
-      {/* Wave 2 (front - darker) */}
       {fillPercent > 0 && (
         <AnimatedPath
-          animatedValue={waveAnim}
+          waveAnim={waveAnim}
+          fillAnim={fillAnim}
           wavePath={wavePath}
           fill={WAVE_DARK}
           phaseOffset={0.5}
@@ -87,7 +93,6 @@ function WaveCircle({ fillPercent }: { fillPercent: number }) {
         />
       )}
 
-      {/* Bubbles */}
       <Circle cx={70} cy={190} r={5} fill={BUBBLE_COLOR} opacity={0.6} clipPath="url(#circleClip)" />
       <Circle cx={110} cy={196} r={4.5} fill={BUBBLE_COLOR} opacity={0.5} clipPath="url(#circleClip)" />
       <Circle cx={150} cy={192} r={3} fill={BUBBLE_COLOR} opacity={0.4} clipPath="url(#circleClip)" />
@@ -96,32 +101,49 @@ function WaveCircle({ fillPercent }: { fillPercent: number }) {
 }
 
 function AnimatedPath({
-  animatedValue,
+  waveAnim,
+  fillAnim,
   wavePath,
   fill,
   phaseOffset,
   clipPath,
 }: {
-  animatedValue: Animated.Value;
-  wavePath: (offset: number) => string;
+  waveAnim: Animated.Value;
+  fillAnim: Animated.Value;
+  wavePath: (fillY: number, offset: number) => string;
   fill: string;
   phaseOffset: number;
   clipPath: string;
 }) {
   const pathRef = useRef<any>(null);
+  const waveRef = useRef(0);
+  const fillRef = useRef(0);
 
   useEffect(() => {
-    const id = animatedValue.addListener(({ value }) => {
-      const segW = SIZE / 2;
-      const offset = (value * segW * 2) % (segW * 2); // cycles over exactly one wave period
-      if (pathRef.current) {
-        pathRef.current.setNativeProps({ d: wavePath(offset) });
-      }
+    const waveId = waveAnim.addListener(({ value }) => {
+      waveRef.current = value;
+      updatePath();
     });
-    return () => animatedValue.removeListener(id);
+    const fillId = fillAnim.addListener(({ value }) => {
+      fillRef.current = value;
+      updatePath();
+    });
+    return () => {
+      waveAnim.removeListener(waveId);
+      fillAnim.removeListener(fillId);
+    };
   }, []);
 
-  return <Path ref={pathRef} d={wavePath(0)} fill={fill} clipPath={clipPath} />;
+  function updatePath() {
+    const segW = SIZE / 2;
+    const offset = (waveRef.current * segW * 2 + phaseOffset * segW * 2) % (segW * 2);
+    const fillY = SIZE - fillRef.current * SIZE;
+    if (pathRef.current) {
+      pathRef.current.setNativeProps({ d: wavePath(fillY, offset) });
+    }
+  }
+
+  return <Path ref={pathRef} d={wavePath(SIZE, 0)} fill={fill} clipPath={clipPath} />;
 }
 
 export default function WaterIntakeDisplay({ consumedMl, goalMl }: { consumedMl: number; goalMl: number }) {
@@ -133,9 +155,7 @@ export default function WaterIntakeDisplay({ consumedMl, goalMl }: { consumedMl:
     <View style={styles.container}>
       <View style={styles.circleWrapper}>
         <View style={styles.circleOutline} />
-        <WaveCircle fillPercent={fillPercent} />
-
-        {/* Text overlay */}
+        <WaveCircle key={goalMl} fillPercent={fillPercent} />
         <View style={styles.textOverlay}>
           <View style={styles.amountRow}>
             <Text style={styles.amount}>{consumedL}</Text>

@@ -6,9 +6,10 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 type Props = {
   onQuickAdd: () => void;
   onOther: () => void;
+  quickAddLabel?: number;
 };
 
-export default function QuickAddButtons({ onQuickAdd, onOther }: Props) {
+export default function QuickAddButtons({ onQuickAdd, onOther, quickAddLabel = 400 }: Props) {
   return (
     <View style={styles.row}>
       <TouchableOpacity style={styles.otherButton} onPress={onOther}>
@@ -18,7 +19,7 @@ export default function QuickAddButtons({ onQuickAdd, onOther }: Props) {
 
       <TouchableOpacity style={styles.quickAddButton} onPress={onQuickAdd}>
         <WaterGlass width={28} height={28} color={colors.primaryDark} />
-        <Text style={styles.quickAddLabel}>+400ml</Text>
+        <Text style={styles.quickAddLabel}>+{quickAddLabel} ml</Text>
       </TouchableOpacity>
     </View>
   );

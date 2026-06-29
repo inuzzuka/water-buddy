@@ -12,6 +12,8 @@ type WaterBuddyContextType = {
   remaining: number | null;
   tip: BuddyTip | null;
   db: WaterBuddyDB;
+  defaultQuickAddMl: number;
+  setDefaultQuickAddMl: (ml: number) => void | Promise<void>;
   logDrink: (amount_ml: number, label?: string) => Promise<void>;
   refresh: () => void;
 };
@@ -22,6 +24,7 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
   const { ready, db } = useWaterBuddy();
   const [user, setUser] = useState<User | null>(null);
   const [tip, setTip] = useState<BuddyTip | null>(null);
+  const [defaultQuickAddMl, setDefaultQuickAddMlState] = useState(400);
 
   useEffect(() => {
     if (!ready) return;
@@ -45,6 +48,10 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
         await buddyTipRepo.seedDefaultTips(foundUser.id);
         const nextTip = await buddyTipRepo.getNextTip(foundUser.id);
         setTip(nextTip);
+        const settings = await db.settings.getForUser(foundUser.id);
+        if (settings?.default_quick_add_ml) {
+          setDefaultQuickAddMlState(settings.default_quick_add_ml);
+        }
       }
     })();
   }, [ready]);
@@ -57,9 +64,31 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
     refresh();
   };
 
+  const setDefaultQuickAddMl = async (ml: number) => {
+    setDefaultQuickAddMlState(ml);
+
+    if (!user?.id) return;
+
+    await db.settings.saveForUser(user.id, {
+      default_quick_add_ml: ml,
+    });
+  };
+
   return (
     <WaterBuddyContext.Provider
-      value={{ ready: ready && user !== null, user, goal, logs, remaining, tip, db, logDrink, refresh }}>
+      value={{
+        ready: ready && user !== null,
+        user,
+        goal,
+        logs,
+        remaining,
+        tip,
+        db,
+        defaultQuickAddMl,
+        setDefaultQuickAddMl,
+        logDrink,
+        refresh,
+      }}>
       {children}
     </WaterBuddyContext.Provider>
   );

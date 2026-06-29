@@ -12,7 +12,7 @@ export default function Journal() {
   const [chartData, setChartData] = useState<{ date: string; total_ml: number }[]>([]);
   useEffect(() => {
     if (!user?.id) return;
-    const days = period === 'Week' ? 7 : 28;
+    const days = period === 'Week' ? 14 : 28;
     const from = new Date();
     from.setDate(from.getDate() - days + 1);
     const fromDate = from.toISOString().split('T')[0];

@@ -46,6 +46,7 @@ export type AppSettings = {
   user_id: number;
   dark_mode: 0 | 1;
   sound: 0 | 1;
+  default_quick_add_ml?: number;
   updated_at?: string;
 };
 

@@ -10,14 +10,18 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 export default function Ritual() {
-  const { goal, logs, logDrink, tip } = useWaterBuddyContext();
+  const { goal, logDrink, defaultQuickAddMl, setDefaultQuickAddMl, tip, logs } = useWaterBuddyContext();
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <ScreenContent>
       <BuddyMascot size={160} bubble="Good morning, Andjela! Time for a refreshing sip?" />
       <WaterIntakeDisplay consumedMl={goal?.consumed_ml ?? 0} goalMl={goal?.goal_ml ?? 2500} />
-      <QuickAddButtons onQuickAdd={() => logDrink(400, 'Quick Add')} onOther={() => setModalVisible(true)} />
+      <QuickAddButtons
+        onQuickAdd={() => logDrink(defaultQuickAddMl, 'Quick Add')}
+        onOther={() => setModalVisible(true)}
+        quickAddLabel={defaultQuickAddMl}
+      />
       <View style={{ flexDirection: 'row', gap: 12, paddingHorizontal: 24, marginVertical: 16 }}>
         <StreakCard
           streakDays={goal?.streak_days ?? 0}
@@ -30,7 +34,10 @@ export default function Ritual() {
       <AddWaterModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onConfirm={(amount, label, isDefault) => logDrink(amount, label)}
+        onConfirm={(amount, label, isDefault) => {
+          logDrink(amount, label);
+          if (isDefault) setDefaultQuickAddMl(amount);
+        }}
       />
     </ScreenContent>
   );

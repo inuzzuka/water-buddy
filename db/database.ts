@@ -74,11 +74,12 @@ const MIGRATIONS: Migration[] = [
       // ── Settings ───────────────────────────────────────────────────────────
       // One row per user. Flags from the Settings screen.
       `CREATE TABLE IF NOT EXISTS settings (
-        id          INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        dark_mode   INTEGER NOT NULL DEFAULT 0,
-        sound       INTEGER NOT NULL DEFAULT 1,
-        updated_at  TEXT    NOT NULL DEFAULT (datetime('now')),
+        id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id              INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        dark_mode            INTEGER NOT NULL DEFAULT 0,
+        sound                INTEGER NOT NULL DEFAULT 1,
+        default_quick_add_ml INTEGER NOT NULL DEFAULT 400,
+        updated_at           TEXT    NOT NULL DEFAULT (datetime('now')),
         UNIQUE(user_id)
       )`,
 

@@ -36,7 +36,7 @@ export default function AddWaterModal({ visible, onClose, onConfirm }: Props) {
         <Text style={styles.title}>Add Water</Text>
 
         <FormInput
-          label="Amount (ml)"
+          label="Amount (ml) *"
           icon={AmountIcon}
           value={amount}
           onChangeText={setAmount}
@@ -46,7 +46,7 @@ export default function AddWaterModal({ visible, onClose, onConfirm }: Props) {
         />
 
         <FormInput
-          label="Label (optional)"
+          label="Label"
           icon={LabelIcon}
           value={label}
           onChangeText={setLabel}
