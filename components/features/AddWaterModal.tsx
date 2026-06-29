@@ -3,7 +3,8 @@ import AmountIcon from '@/assets/icons/water-glass.svg';
 import { colors } from '@/constants/colors';
 import { fonts, typography } from '@/constants/typography';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+
 import Button from '../ui/Button';
 import FormInput from '../ui/FormInput';
 
@@ -30,47 +31,52 @@ export default function AddWaterModal({ visible, onClose, onConfirm }: Props) {
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose} />
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.sheet}>
-        <View style={styles.handle} />
-        <Text style={styles.title}>Add Water</Text>
+      <Pressable style={styles.overlay} onPress={Keyboard.dismiss}>
+        <Pressable style={styles.backdrop} onPress={onClose} />
+        <View style={styles.sheet}>
+          <View style={styles.handle} />
+          <Text style={styles.title}>Add Water</Text>
 
-        <FormInput
-          label="Amount (ml) *"
-          icon={AmountIcon}
-          value={amount}
-          onChangeText={setAmount}
-          keyboardType="numeric"
-          placeholder="e.g. 250"
-          returnKeyType="next"
-        />
+          <FormInput
+            label="Amount (ml) *"
+            icon={AmountIcon}
+            value={amount}
+            onChangeText={setAmount}
+            keyboardType="numeric"
+            placeholder="e.g. 250"
+            returnKeyType="next"
+          />
 
-        <FormInput
-          label="Label"
-          icon={LabelIcon}
-          value={label}
-          onChangeText={setLabel}
-          placeholder="e.g. Morning freshness"
-          returnKeyType="done"
-          onSubmitEditing={handleConfirm}
-        />
+          <FormInput
+            label="Label"
+            icon={LabelIcon}
+            value={label}
+            onChangeText={setLabel}
+            placeholder="e.g. Morning freshness"
+            returnKeyType="done"
+            onSubmitEditing={handleConfirm}
+          />
+          <Pressable style={styles.checkboxRow} onPress={() => setIsDefault((v) => !v)}>
+            <View style={[styles.checkbox, isDefault && styles.checkboxChecked]}>
+              {isDefault && <Text style={styles.checkmark}>✓</Text>}
+            </View>
+            <Text style={styles.checkboxLabel}>Set as default quick-add amount</Text>
+          </Pressable>
 
-        <Pressable style={styles.checkboxRow} onPress={() => setIsDefault((v) => !v)}>
-          <View style={[styles.checkbox, isDefault && styles.checkboxChecked]}>
-            {isDefault && <Text style={styles.checkmark}>✓</Text>}
-          </View>
-          <Text style={styles.checkboxLabel}>Set as default quick-add amount</Text>
-        </Pressable>
-
-        <Button label="Add" onPress={handleConfirm} disabled={!amount} />
-      </KeyboardAvoidingView>
+          <Button label="Add" onPress={handleConfirm} disabled={!amount} />
+        </View>
+      </Pressable>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  backdrop: {
+  overlay: {
     flex: 1,
+    justifyContent: 'flex-end',
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.3)',
   },
   sheet: {
