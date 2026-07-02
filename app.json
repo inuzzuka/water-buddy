@@ -23,7 +23,8 @@
         "backgroundColor": "#E6F4FE"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.inuzuka.WaterBuddy"
     },
     "web": {
       "output": "static",
@@ -37,10 +38,14 @@
           "image": "./assets/images/water-buddy.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#000000"
-          }
+          "backgroundColor": "#F5FAFC"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/water-buddy.png",
+          "color": "#0062A1"
         }
       ],
       "expo-font",

@@ -208,4 +208,26 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: colors.tabInactive,
   },
+  toggleTrack: {
+    width: 44,
+    height: 24,
+    borderRadius: 9999,
+    backgroundColor: '#DEE3E5',
+    justifyContent: 'center',
+    padding: 2,
+  },
+  toggleTrackOn: {
+    backgroundColor: colors.primary,
+  },
+  toggleThumb: {
+    width: 20,
+    height: 20,
+    borderRadius: 9999,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.white,
+  },
+  toggleThumbOn: {
+    alignSelf: 'flex-end',
+  },
 });

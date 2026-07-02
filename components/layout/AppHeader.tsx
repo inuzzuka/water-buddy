@@ -1,8 +1,7 @@
-import Bell from '@/assets/icons/bell.svg';
 import WaterDrop from '@/assets/icons/water-drop.svg';
 import { colors } from '@/constants/colors';
 import { typography } from '@/constants/typography';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function AppHeader({ title }: { title: string }) {
   return (
@@ -14,9 +13,9 @@ export default function AppHeader({ title }: { title: string }) {
         <Text style={styles.title}>{title}</Text>
       </View>
 
-      <TouchableOpacity style={styles.iconCircle}>
+      {/* <TouchableOpacity style={styles.iconCircle}>
         <Bell width={18.67} height={23.33} color={colors.primary} />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 }

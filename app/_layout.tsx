@@ -31,6 +31,7 @@ export default function RootLayout() {
       <WaterBuddyProvider>
         <StatusBar style="dark" backgroundColor={colors.background} />
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
+          <Stack.Screen name="splash" />
           <Stack.Screen name="(tabs)" />
         </Stack>
       </WaterBuddyProvider>

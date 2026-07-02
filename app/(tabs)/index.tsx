@@ -6,12 +6,22 @@ import { LastSipCard, StreakCard } from '@/components/features/StatCards';
 import WaterIntakeDisplay from '@/components/features/WaterIntakeDisplay';
 import ScreenContent from '@/components/layout/ScreenContent';
 import { useWaterBuddyContext } from '@/context/WaterBuddyContext';
+import * as Notifications from 'expo-notifications';
 import { useState } from 'react';
 import { View } from 'react-native';
 
 export default function Ritual() {
   const { goal, logDrink, defaultQuickAddMl, setDefaultQuickAddMl, tip, logs } = useWaterBuddyContext();
   const [modalVisible, setModalVisible] = useState(false);
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
 
   return (
     <ScreenContent>
