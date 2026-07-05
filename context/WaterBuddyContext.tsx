@@ -44,6 +44,7 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
       }
       if (foundUser?.id) {
         setUser(foundUser);
+        await db.dailyGoals.recalculateStreak(foundUser.id);
         const buddyTipRepo = new BuddyTipRepository();
         await buddyTipRepo.seedDefaultTips(foundUser.id);
         const nextTip = await buddyTipRepo.getNextTip(foundUser.id);
@@ -60,7 +61,10 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
 
   const logDrink = async (amount_ml: number, label = 'Water') => {
     if (!user?.id) return;
-    await db.waterLogs.logDrink(user.id, amount_ml, label);
+    const result = await db.waterLogs.logDrink(user.id, amount_ml, label);
+    if (result.newTotal >= (goal?.goal_ml ?? 2500)) {
+      await db.dailyGoals.recalculateStreak(user.id);
+    }
     refresh();
   };
 
