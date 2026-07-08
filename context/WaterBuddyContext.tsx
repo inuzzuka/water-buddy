@@ -2,6 +2,7 @@ import { useToday, useWaterBuddy, WaterBuddyDB } from '@/db/hooks/useWaterBuddy'
 import { BuddyTipRepository } from '@/db/repositories/BuddyTipRepository';
 import { UserRepository } from '@/db/repositories/UserRepository';
 import { BuddyTip, DailyGoal, User, WaterLog } from '@/db/types';
+import { restoreReminderNotifications } from '@/services/notificationService';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 type WaterBuddyContextType = {
@@ -12,10 +13,23 @@ type WaterBuddyContextType = {
   remaining: number | null;
   tip: BuddyTip | null;
   db: WaterBuddyDB;
+  reminderSettings: ReminderSettings | null;
+  quietHours: QuietHoursSettings | null;
   defaultQuickAddMl: number;
   setDefaultQuickAddMl: (ml: number) => void | Promise<void>;
   logDrink: (amount_ml: number, label?: string) => Promise<void>;
-  refresh: () => void;
+  refreshSettings: () => Promise<void>;
+};
+
+type ReminderSettings = {
+  enabled: boolean;
+  frequency: number;
+};
+
+type QuietHoursSettings = {
+  enabled: boolean;
+  start: string;
+  end: string;
 };
 
 const WaterBuddyContext = createContext<WaterBuddyContextType | null>(null);
@@ -25,6 +39,8 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
   const [user, setUser] = useState<User | null>(null);
   const [tip, setTip] = useState<BuddyTip | null>(null);
   const [defaultQuickAddMl, setDefaultQuickAddMlState] = useState(400);
+  const [reminderSettings, setReminderSettings] = useState<ReminderSettings | null>(null);
+  const [quietHours, setQuietHours] = useState<QuietHoursSettings | null>(null);
 
   useEffect(() => {
     if (!ready) return;
@@ -53,11 +69,64 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
         if (settings?.default_quick_add_ml) {
           setDefaultQuickAddMlState(settings.default_quick_add_ml);
         }
+        const reminders = await db.reminders.getForUser(foundUser.id);
+
+        if (!reminders) return;
+
+        setReminderSettings({
+          enabled: reminders.enabled === 1,
+          frequency: reminders.frequency_minutes,
+        });
+
+        setQuietHours({
+          enabled: reminders.quiet_hours_enabled === 1,
+          start: reminders.quiet_start,
+          end: reminders.quiet_end,
+        });
+
+        // restore notifications if missing
+        await restoreReminderNotifications({
+          enabled: reminders.enabled === 1,
+          frequencyMinutes: reminders.frequency_minutes,
+          quietHours: {
+            enabled: reminders.quiet_hours_enabled === 1,
+            start: reminders.quiet_start,
+            end: reminders.quiet_end,
+          },
+        });
+        await refreshSettings();
       }
     })();
   }, [ready]);
 
   const { goal, logs, remaining, refresh } = useToday(user?.id ?? 0);
+
+  const refreshSettings = async () => {
+    if (!user?.id) return;
+
+    const updatedUser = await db.users.findById(user.id);
+
+    if (updatedUser) {
+      setUser(updatedUser);
+    }
+
+    const reminders = await db.reminders.getForUser(user.id);
+
+    if (!reminders) return;
+
+    setReminderSettings({
+      enabled: reminders.enabled === 1,
+      frequency: reminders.frequency_minutes,
+    });
+
+    setQuietHours({
+      enabled: reminders.quiet_hours_enabled === 1,
+      start: reminders.quiet_start,
+      end: reminders.quiet_end,
+    });
+
+    refresh();
+  };
 
   const logDrink = async (amount_ml: number, label = 'Water') => {
     if (!user?.id) return;
@@ -89,9 +158,11 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
         tip,
         db,
         defaultQuickAddMl,
+        reminderSettings,
+        quietHours,
         setDefaultQuickAddMl,
         logDrink,
-        refresh,
+        refreshSettings,
       }}>
       {children}
     </WaterBuddyContext.Provider>

@@ -38,6 +38,7 @@ export type Reminder = {
   frequency_minutes: number; // 60 | 120 | custom
   quiet_start: string; // 'HH:MM'
   quiet_end: string; // 'HH:MM'
+  quiet_hours_enabled: 0 | 1;
   updated_at?: string;
 };
 

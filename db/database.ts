@@ -67,6 +67,7 @@ const MIGRATIONS: Migration[] = [
         frequency_minutes   INTEGER NOT NULL DEFAULT 60,
         quiet_start         TEXT    NOT NULL DEFAULT '22:00',
         quiet_end           TEXT    NOT NULL DEFAULT '07:00',
+        quiet_hours_enabled INTEGER NOT NULL DEFAULT 0,
         updated_at          TEXT    NOT NULL DEFAULT (datetime('now')),
         UNIQUE(user_id)
       )`,
@@ -94,8 +95,10 @@ const MIGRATIONS: Migration[] = [
       )`,
     ],
   },
-  // ── Future migrations go here ─────────────────────────────────────────────
-  // { version: 2, up: [`ALTER TABLE users ADD COLUMN weight_kg REAL`] },
+  // {
+  //   version: 2,
+  //   up: [`ALTER TABLE reminders ADD COLUMN quiet_hours_enabled INTEGER NOT NULL DEFAULT 0`],
+  // },
 ];
 
 // ─── Singleton ────────────────────────────────────────────────────────────────

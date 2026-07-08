@@ -6,26 +6,28 @@ import { LastSipCard, StreakCard } from '@/components/features/StatCards';
 import WaterIntakeDisplay from '@/components/features/WaterIntakeDisplay';
 import ScreenContent from '@/components/layout/ScreenContent';
 import { useWaterBuddyContext } from '@/context/WaterBuddyContext';
-import * as Notifications from 'expo-notifications';
 import { useState } from 'react';
 import { View } from 'react-native';
 
+function getGreeting() {
+  const hour = new Date().getHours();
+
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
 export default function Ritual() {
-  const { goal, logDrink, defaultQuickAddMl, setDefaultQuickAddMl, tip, logs } = useWaterBuddyContext();
+  const { user, goal, logDrink, defaultQuickAddMl, setDefaultQuickAddMl, tip, logs } = useWaterBuddyContext();
+
   const [modalVisible, setModalVisible] = useState(false);
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-      shouldShowBanner: true,
-      shouldShowList: true,
-    }),
-  });
+
+  const greeting = getGreeting();
+  const firstName = user?.first_name ?? 'Buddy';
 
   return (
     <ScreenContent>
-      <BuddyMascot size={160} bubble="Good morning, Andjela! Time for a refreshing sip?" />
+      <BuddyMascot size={160} bubble={`${greeting}, ${firstName}! Time for a refreshing sip?`} />
       <WaterIntakeDisplay consumedMl={goal?.consumed_ml ?? 0} goalMl={goal?.goal_ml ?? 2500} />
       <QuickAddButtons
         onQuickAdd={() => logDrink(defaultQuickAddMl, 'Quick Add')}

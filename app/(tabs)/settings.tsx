@@ -1,60 +1,92 @@
 import BuddyProfile from '@/components/features/BuddyProfile';
 import DailyGoalSlider from '@/components/features/DailyGoalSlider';
-import RemindersSection, { scheduleReminders } from '@/components/features/RemindersSection';
+import FocusTimeSection from '@/components/features/QuietHoursSection';
+import RemindersSection from '@/components/features/RemindersSection';
 import ScreenContent from '@/components/layout/ScreenContent';
 import { useWaterBuddyContext } from '@/context/WaterBuddyContext';
-import { useEffect, useState } from 'react';
+import { updateReminderNotifications } from '@/services/notificationService';
+import { router } from 'expo-router';
+import { useEffect } from 'react';
 
 export default function Settings() {
-  const { user, goal, db, refresh } = useWaterBuddyContext();
+  const { user, db, goal, reminderSettings, quietHours, refreshSettings } = useWaterBuddyContext();
 
   const handleGoalChange = async (ml: number) => {
     if (!user?.id) return;
+
     await db.dailyGoals.setGoal(user.id, ml);
-    refresh();
+    await refreshSettings();
+  };
+
+  const refreshNotifications = async () => {
+    if (!user?.id) return;
+
+    const settings = await db.reminders.getForUser(user.id);
+    await refreshNotifications();
+
+    if (!settings) return;
+
+    await updateReminderNotifications({
+      enabled: settings.enabled === 1,
+      frequencyMinutes: settings.frequency_minutes,
+      quietHours: {
+        enabled: settings.quiet_hours_enabled === 1,
+        start: settings.quiet_start,
+        end: settings.quiet_end,
+      },
+    });
   };
 
   const handleSaveReminder = async (enabled: boolean, frequencyMinutes: number) => {
     if (!user?.id) return;
+
     await db.reminders.saveForUser(user.id, {
       enabled: enabled ? 1 : 0,
       frequency_minutes: frequencyMinutes,
     });
+
+    await refreshNotifications();
+
+    await refreshSettings();
   };
 
-  const [reminderSettings, setReminderSettings] = useState<{ enabled: boolean; frequency: number }>({
-    enabled: false,
-    frequency: 60,
-  });
+  const handleSaveQuietHours = async (enabled: boolean, start: string, end: string) => {
+    if (!user?.id) return;
+
+    await db.reminders.saveForUser(user.id, {
+      quiet_hours_enabled: enabled ? 1 : 0,
+      quiet_start: start,
+      quiet_end: end,
+    });
+
+    await refreshNotifications();
+
+    await refreshSettings();
+  };
 
   useEffect(() => {
     if (!user?.id) return;
-    db.reminders.getForUser(user.id).then(async (r) => {
-      if (!r) return;
 
-      const enabled = r.enabled === 1;
-      const frequency = r.frequency_minutes;
-
-      setReminderSettings({
-        enabled,
-        frequency,
-      });
-
-      if (enabled) {
-        await scheduleReminders(frequency);
-      }
-    });
-  }, [user?.id]);
+    refreshSettings();
+  }, [user?.id, refreshSettings]);
 
   return (
     <ScreenContent>
-      {user && <BuddyProfile user={user} onManageAccount={() => {}} />}
+      {user && <BuddyProfile user={user} onManageAccount={() => router.push('/manage-account')} />}
+
       <DailyGoalSlider goalMl={goal?.goal_ml ?? 2500} onGoalChange={handleGoalChange} />
+
       <RemindersSection
-        userId={user?.id ?? 0}
         onSave={handleSaveReminder}
-        initialEnabled={reminderSettings.enabled}
-        initialFrequency={reminderSettings.frequency}
+        initialEnabled={reminderSettings?.enabled ?? false}
+        initialFrequency={reminderSettings?.frequency ?? 60}
+      />
+
+      <FocusTimeSection
+        initialEnabled={quietHours?.enabled ?? false}
+        initialStart={quietHours?.start ?? '22:00'}
+        initialEnd={quietHours?.end ?? '07:00'}
+        onSave={handleSaveQuietHours}
       />
     </ScreenContent>
   );

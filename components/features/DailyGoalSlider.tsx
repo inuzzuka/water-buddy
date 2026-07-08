@@ -1,8 +1,10 @@
 import InfoIcon from '@/assets/icons/info.svg';
+import Icon from '@/assets/icons/water-glass.svg';
 import { colors } from '@/constants/colors';
 import { fonts } from '@/constants/typography';
 import { useRef, useState } from 'react';
 import { PanResponder, StyleSheet, Text, View } from 'react-native';
+import IconButton from '../ui/IconButton';
 
 type Props = {
   goalMl: number;
@@ -50,56 +52,69 @@ export default function DailyGoalSlider({ goalMl, onGoalChange }: Props) {
   const thumbPosition = ratio * trackWidth;
   const fillWidth = ratio * trackWidth;
   const goalL = (goal / 1000).toFixed(1);
+  const shouldShowHint = goal < 2500;
 
   return (
-    <View style={styles.card}>
-      <View style={styles.topRow}>
-        <View>
-          <Text style={styles.sectionLabel}>Daily Hydration Goal</Text>
-          <Text style={styles.hint}>Keep your buddy happy!</Text>
-        </View>
-        <View style={styles.valueRow}>
-          <Text style={styles.value}>{goalL}</Text>
-          <Text style={styles.unit}>L</Text>
-        </View>
-      </View>
+    <View style={styles.section}>
+      <Text style={styles.sectionLabel}>Hydration Goal</Text>
+      <View style={styles.card}>
+        <View style={styles.topRow}>
+          <View style={styles.titleContainer}>
+            <IconButton icon={Icon} background />
+            <View>
+              <Text style={styles.title}>Daily Hydration</Text>
+              <Text style={styles.hint}>Set your daily water goal.</Text>
+            </View>
+          </View>
 
-      <View
-        style={styles.sliderArea}
-        onLayout={(e) => {
-          const w = e.nativeEvent.layout.width;
-          trackWidthRef.current = w;
-          setTrackWidth(w);
-        }}
-        {...panResponder.panHandlers}>
-        <View style={styles.track}>
-          <View style={[styles.fill, { width: fillWidth }]} />
+          <View style={styles.valueRow}>
+            <Text style={styles.value}>{goalL}</Text>
+            <Text style={styles.unit}>L</Text>
+          </View>
         </View>
-        <View style={[styles.thumb, { left: thumbPosition - THUMB_SIZE / 2 }]} />
-      </View>
 
-      <View style={styles.rangeRow}>
-        <Text style={styles.rangeLabel}>1.0L</Text>
-        <Text style={styles.rangeLabel}>7.0L</Text>
-      </View>
-
-      <View style={styles.hintBox}>
-        <View style={styles.infoCircle}>
-          <InfoIcon width={14} height={14} color={colors.white} />
+        <View
+          style={styles.sliderArea}
+          onLayout={(e) => {
+            const w = e.nativeEvent.layout.width;
+            trackWidthRef.current = w;
+            setTrackWidth(w);
+          }}
+          {...panResponder.panHandlers}>
+          <View style={styles.track}>
+            <View style={[styles.fill, { width: fillWidth }]} />
+          </View>
+          <View style={[styles.thumb, { left: thumbPosition - THUMB_SIZE / 2 }]} />
         </View>
-        <Text style={styles.hintText}>Most health experts recommend about 2.5L per day.</Text>
+
+        <View style={styles.rangeRow}>
+          <Text style={styles.rangeLabel}>1.0L</Text>
+          <Text style={styles.rangeLabel}>7.0L</Text>
+        </View>
+
+        {shouldShowHint && (
+          <View style={styles.hintBox}>
+            <View style={styles.infoCircle}>
+              <InfoIcon width={14} height={14} color={colors.white} />
+            </View>
+            <Text style={styles.hintText}>Most health experts recommend about 2.5L per day.</Text>
+          </View>
+        )}
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  section: {
+    marginHorizontal: 25,
+    marginVertical: 15,
+    gap: 10,
+  },
   card: {
     backgroundColor: colors.white,
     borderRadius: 32,
     padding: 25,
-    marginHorizontal: 25,
-    marginVertical: 15,
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.15,
@@ -118,11 +133,24 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     letterSpacing: 1.6,
     textTransform: 'uppercase',
+    color: colors.tabInactive,
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    flex: 1,
+    marginRight: 12,
+  },
+  title: {
+    fontFamily: fonts.jakarta,
+    fontSize: 18,
+    lineHeight: 28,
     color: colors.redDark,
   },
   hint: {
-    fontFamily: fonts.jakarta,
-    fontSize: 13,
+    fontFamily: fonts.regular,
+    fontSize: 14,
     color: colors.tabInactive,
     marginTop: 2,
   },
