@@ -47,16 +47,20 @@ export async function updateReminderNotifications({
 
   const now = new Date();
 
-  const first = new Date(now);
-  first.setSeconds(0);
-  first.setMilliseconds(0);
+  let next = new Date(now);
+  next.setSeconds(0);
+  next.setMilliseconds(0);
 
-  if (first <= now) {
-    first.setMinutes(first.getMinutes() + 1);
+  const minutes = next.getMinutes();
+
+  const remainder = minutes % frequencyMinutes;
+
+  if (remainder !== 0 || next <= now) {
+    next.setMinutes(minutes + (frequencyMinutes - remainder));
   }
 
-  for (let i = 1; i <= remindersPerDay; i++) {
-    const date = new Date(first.getTime() + i * frequencyMinutes * 60 * 1000);
+  for (let i = 0; i < remindersPerDay; i++) {
+    const date = new Date(next.getTime() + i * frequencyMinutes * 60 * 1000);
 
     if (quietHours.enabled && isQuietTime(date, quietHours.start, quietHours.end)) {
       continue;
