@@ -26,10 +26,12 @@ export async function updateReminderNotifications({
   enabled,
   frequencyMinutes,
   quietHours,
+  sound,
 }: {
   enabled: boolean;
   frequencyMinutes: number;
   quietHours: QuietHours;
+  sound: boolean;
 }) {
   const MAX_SCHEDULED = 50;
   const remindersPerDay = Math.min(Math.floor((24 * 60) / frequencyMinutes), MAX_SCHEDULED);
@@ -70,12 +72,11 @@ export async function updateReminderNotifications({
       content: {
         title: 'WaterBuddy',
         body: 'Time for a refreshing sip! Your buddy is thirsty.',
-        sound: 'waterbuddy_sound.wav',
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,
         date,
-        channelId: 'water-reminders-v2',
+        channelId: sound ? 'water-reminders-sound' : 'water-reminders-silent',
       },
     });
   }
@@ -87,6 +88,7 @@ export async function restoreReminderNotifications(settings: {
   enabled: boolean;
   frequencyMinutes: number;
   quietHours: QuietHours;
+  sound: boolean;
 }) {
   const scheduled = await Notifications.getAllScheduledNotificationsAsync();
 

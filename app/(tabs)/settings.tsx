@@ -1,5 +1,6 @@
 import BuddyProfile from '@/components/features/BuddyProfile';
 import DailyGoalSlider from '@/components/features/DailyGoalSlider';
+import FeedbackSection from '@/components/features/FeedbackSection';
 import FocusTimeSection from '@/components/features/QuietHoursSection';
 import RemindersSection from '@/components/features/RemindersSection';
 import ScreenContent from '@/components/layout/ScreenContent';
@@ -9,7 +10,7 @@ import { router } from 'expo-router';
 import { useEffect } from 'react';
 
 export default function Settings() {
-  const { user, db, goal, reminderSettings, quietHours, refreshSettings } = useWaterBuddyContext();
+  const { user, db, goal, reminderSettings, quietHours, appSettings, refreshSettings } = useWaterBuddyContext();
 
   const handleGoalChange = async (ml: number) => {
     if (!user?.id) return;
@@ -21,19 +22,18 @@ export default function Settings() {
   const refreshNotifications = async () => {
     if (!user?.id) return;
 
-    const settings = await db.reminders.getForUser(user.id);
-    await refreshNotifications();
-
-    if (!settings) return;
-
+    const reminders = await db.reminders.getForUser(user.id);
+    const settings = await db.settings.getForUser(user.id);
+    if (!reminders) return;
     await updateReminderNotifications({
-      enabled: settings.enabled === 1,
-      frequencyMinutes: settings.frequency_minutes,
+      enabled: reminders.enabled === 1,
+      frequencyMinutes: reminders.frequency_minutes,
       quietHours: {
-        enabled: settings.quiet_hours_enabled === 1,
-        start: settings.quiet_start,
-        end: settings.quiet_end,
+        enabled: reminders.quiet_hours_enabled === 1,
+        start: reminders.quiet_start,
+        end: reminders.quiet_end,
       },
+      sound: settings?.sound !== 0,
     });
   };
 
@@ -45,9 +45,8 @@ export default function Settings() {
       frequency_minutes: frequencyMinutes,
     });
 
-    await refreshNotifications();
-
     await refreshSettings();
+    await refreshNotifications();
   };
 
   const handleSaveQuietHours = async (enabled: boolean, start: string, end: string) => {
@@ -59,9 +58,19 @@ export default function Settings() {
       quiet_end: end,
     });
 
+    await refreshSettings();
     await refreshNotifications();
+  };
+
+  const handleSaveFeedback = async (sound: boolean) => {
+    if (!user?.id) return;
+
+    await db.settings.saveForUser(user.id, {
+      sound: sound ? 1 : 0,
+    });
 
     await refreshSettings();
+    await refreshNotifications();
   };
 
   useEffect(() => {
@@ -88,6 +97,7 @@ export default function Settings() {
         initialEnd={quietHours?.end ?? '07:00'}
         onSave={handleSaveQuietHours}
       />
+      <FeedbackSection onSave={handleSaveFeedback} initialSound={appSettings?.sound} />
     </ScreenContent>
   );
 }

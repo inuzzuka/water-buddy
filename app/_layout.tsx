@@ -31,11 +31,18 @@ export default function RootLayout() {
 
   useEffect(() => {
     async function setupNotifications() {
-      await Notifications.setNotificationChannelAsync('water-reminders-v2', {
-        name: 'Water Reminders',
+      await Notifications.setNotificationChannelAsync('water-reminders-sound', {
+        name: 'Water Reminders (Sound)',
         importance: Notifications.AndroidImportance.HIGH,
         sound: 'waterbuddy_sound.wav',
         vibrationPattern: [0, 250, 250, 250],
+      });
+
+      await Notifications.setNotificationChannelAsync('water-reminders-silent', {
+        name: 'Water Reminders (Silent)',
+        importance: Notifications.AndroidImportance.HIGH,
+        sound: null,
+        vibrationPattern: [0],
       });
     }
 

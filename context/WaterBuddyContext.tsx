@@ -16,6 +16,7 @@ type WaterBuddyContextType = {
   reminderSettings: ReminderSettings | null;
   quietHours: QuietHoursSettings | null;
   defaultQuickAddMl: number;
+  appSettings: AppSettings | null;
   setDefaultQuickAddMl: (ml: number) => void | Promise<void>;
   logDrink: (amount_ml: number, label?: string) => Promise<void>;
   refreshSettings: () => Promise<void>;
@@ -32,6 +33,10 @@ type QuietHoursSettings = {
   end: string;
 };
 
+type AppSettings = {
+  sound: boolean;
+};
+
 const WaterBuddyContext = createContext<WaterBuddyContextType | null>(null);
 
 export function WaterBuddyProvider({ children }: { children: React.ReactNode }) {
@@ -41,6 +46,9 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
   const [defaultQuickAddMl, setDefaultQuickAddMlState] = useState(400);
   const [reminderSettings, setReminderSettings] = useState<ReminderSettings | null>(null);
   const [quietHours, setQuietHours] = useState<QuietHoursSettings | null>(null);
+  const [appSettings, setAppSettings] = useState<AppSettings>({
+    sound: true,
+  });
 
   useEffect(() => {
     if (!ready) return;
@@ -93,6 +101,7 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
             start: reminders.quiet_start,
             end: reminders.quiet_end,
           },
+          sound: settings?.sound !== 0,
         });
         await refreshSettings();
       }
@@ -123,6 +132,11 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
       enabled: reminders.quiet_hours_enabled === 1,
       start: reminders.quiet_start,
       end: reminders.quiet_end,
+    });
+
+    const settings = await db.settings.getForUser(user.id);
+    setAppSettings({
+      sound: settings?.sound !== 0,
     });
 
     refresh();
@@ -160,6 +174,7 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
         defaultQuickAddMl,
         reminderSettings,
         quietHours,
+        appSettings,
         setDefaultQuickAddMl,
         logDrink,
         refreshSettings,
