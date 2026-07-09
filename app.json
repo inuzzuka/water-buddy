@@ -11,10 +11,6 @@
     "androidStatusBar": {
       "barStyle": "dark-content"
     },
-    "androidNavigationBar": {
-      "backgroundColor": "#FFFFFF",
-      "barStyle": "dark-content"
-    },
     "ios": {
       "supportsTablet": true
     },

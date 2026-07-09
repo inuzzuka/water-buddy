@@ -28,7 +28,14 @@ function CustomToggle({ value, onValueChange }: { value: boolean; onValueChange:
 
   return (
     <Pressable onPress={() => onValueChange(!value)} style={[styles.toggleTrack, value && styles.toggleTrackOn]}>
-      <Animated.View style={[styles.toggleThumb, { transform: [{ translateX }] }]} />
+      <Animated.View
+        style={[
+          styles.toggleThumb,
+          {
+            transform: [{ translateX }],
+          },
+        ]}
+      />
     </Pressable>
   );
 }
@@ -122,21 +129,24 @@ const styles = StyleSheet.create({
     width: 44,
     height: 24,
     borderRadius: 9999,
-    backgroundColor: '#E4E9EB',
+    backgroundColor: '#DEE3E5',
+    justifyContent: 'center',
     padding: 2,
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
   },
-
   toggleTrackOn: {
     backgroundColor: colors.primary,
-    borderColor: colors.primary,
   },
-
   toggleThumb: {
     width: 20,
     height: 20,
-    borderRadius: 10,
+    borderRadius: 9999,
     backgroundColor: colors.white,
+  },
+  toggleThumbOn: {
+    alignSelf: 'flex-end',
+  },
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
 });

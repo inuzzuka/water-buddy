@@ -30,7 +30,7 @@ export default function TabsLayout() {
       </Tabs>
 
       {/* Footer */}
-      <View style={[styles.footerWrapper, { paddingBottom: Math.max(0, insets.bottom - 20) }]}>
+      <View style={[{ paddingBottom: Math.max(0, insets.bottom - 20) }]}>
         <AppFooter />
       </View>
     </View>
@@ -53,19 +53,5 @@ const styles = StyleSheet.create({
   },
   headerWrapper: {
     width: '100%',
-  },
-  footerWrapper: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: colors.white,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 10,
   },
 });

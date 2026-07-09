@@ -1,8 +1,8 @@
 import Icon from '@/assets/icons/moon.svg';
 import { colors } from '@/constants/colors';
 import { fonts } from '@/constants/typography';
-import { useEffect, useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import IconButton from '../ui/IconButton';
 
 type Props = {
@@ -19,9 +19,31 @@ const HOURS = Array.from({ length: 24 }, (_, i) => {
 });
 
 function CustomToggle({ value, onValueChange }: { value: boolean; onValueChange: (v: boolean) => void }) {
+  const animation = useRef(new Animated.Value(value ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.timing(animation, {
+      toValue: value ? 1 : 0,
+      duration: 180,
+      useNativeDriver: false,
+    }).start();
+  }, [value]);
+
+  const translateX = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 20],
+  });
+
   return (
     <Pressable onPress={() => onValueChange(!value)} style={[styles.toggleTrack, value && styles.toggleTrackOn]}>
-      <View style={[styles.toggleThumb, value && styles.toggleThumbOn]} />
+      <Animated.View
+        style={[
+          styles.toggleThumb,
+          {
+            transform: [{ translateX }],
+          },
+        ]}
+      />
     </Pressable>
   );
 }
