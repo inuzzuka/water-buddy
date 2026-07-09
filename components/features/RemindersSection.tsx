@@ -96,9 +96,10 @@ export default function RemindersSection({ onSave, initialEnabled = false, initi
   };
 
   const handleCustomConfirm = () => {
-    const minutes = parseInt(customInput);
+    const hours = parseInt(customInput);
 
-    if (!minutes || minutes <= 0) return;
+    if (!hours || hours <= 0) return;
+    const minutes = hours * 60;
 
     setSelectedOption('custom');
     setFrequency(minutes);
@@ -162,14 +163,14 @@ export default function RemindersSection({ onSave, initialEnabled = false, initi
 
             <Text style={styles.sheetTitle}>Custom Frequency</Text>
 
-            <Text style={styles.sheetHint}>How often should we remind you? (in minutes)</Text>
+            <Text style={styles.sheetHint}>How often should we remind you? (in hours)</Text>
 
             <TextInput
               style={styles.input}
               value={customInput}
               onChangeText={setCustomInput}
               keyboardType="numeric"
-              placeholder="e.g. 45"
+              placeholder="e.g. 1"
               placeholderTextColor={colors.tabInactive}
               autoFocus
             />
