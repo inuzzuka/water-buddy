@@ -7,7 +7,7 @@ import { useWaterBuddyContext } from '@/context/WaterBuddyContext';
 import { useEffect, useState } from 'react';
 
 export default function Journal() {
-  const { user, db, goal, logs } = useWaterBuddyContext();
+  const { db, user, goal, deleteLog, logs } = useWaterBuddyContext();
   const [period, setPeriod] = useState('Week');
   const [chartData, setChartData] = useState<{ date: string; total_ml: number }[]>([]);
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function Journal() {
     <ScreenContent>
       <WeeklyFlow data={chartData} />
       <WaterBarChart data={chartData} goalMl={goal?.goal_ml ?? 2500} period={period} onPeriodChange={setPeriod} />
-      <TodayLogs logs={logs} />
+      <TodayLogs logs={logs} onDelete={deleteLog} />
       <MotivationCard consumed_ml={goal?.consumed_ml ?? 0} goal_ml={goal?.goal_ml ?? 2500} />
     </ScreenContent>
   );

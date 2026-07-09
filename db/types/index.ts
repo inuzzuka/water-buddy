@@ -11,7 +11,7 @@ export type User = {
 };
 
 export type WaterLog = {
-  id?: number;
+  id: number;
   user_id: number;
   amount_ml: number;
   label: string;

@@ -14,6 +14,16 @@ type Props = {
   onConfirm: (amount: number, label: string, isDefault: boolean) => void;
 };
 
+export function getDefaultWaterLabel() {
+  const hour = new Date().getHours();
+
+  if (hour >= 6 && hour < 12) return 'Morning Boost';
+  if (hour >= 12 && hour < 18) return 'Afternoon Recharge';
+  if (hour >= 18 && hour < 24) return 'Evening Refresh';
+
+  return 'Midnight Refill';
+}
+
 export default function AddWaterModal({ visible, onClose, onConfirm }: Props) {
   const [amount, setAmount] = useState('');
   const [label, setLabel] = useState('');
@@ -22,7 +32,7 @@ export default function AddWaterModal({ visible, onClose, onConfirm }: Props) {
   const handleConfirm = () => {
     const ml = parseInt(amount);
     if (!ml || ml <= 0) return;
-    onConfirm(ml, label.trim() || 'Water', isDefault);
+    onConfirm(ml, label.trim() || getDefaultWaterLabel(), isDefault);
     setAmount('');
     setLabel('');
     setIsDefault(false);

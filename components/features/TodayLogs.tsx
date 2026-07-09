@@ -1,13 +1,30 @@
+import TrashIcon from '@/assets/icons/trash.svg';
 import Icon from '@/assets/icons/water-glass.svg';
 import { colors } from '@/constants/colors';
 import { fonts } from '@/constants/typography';
 import { WaterLog } from '@/db/types';
-import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRef, useState } from 'react';
+import {
+  Animated,
+  LayoutAnimation,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  UIManager,
+  View,
+} from 'react-native';
 import IconButton from '../ui/IconButton';
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 type Props = {
   logs: WaterLog[];
+  onDelete: (id: number) => Promise<void>;
 };
 
 function formatTime(logged_at: string): string {
@@ -15,22 +32,64 @@ function formatTime(logged_at: string): string {
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-function LogEntry({ log }: { log: WaterLog }) {
+function LogEntry({
+  log,
+  showDelete,
+  onDelete,
+}: {
+  log: WaterLog;
+  showDelete?: boolean;
+  onDelete?: (id: number) => void;
+}) {
+  // drives the fade + shrink when this entry is removed
+  const anim = useRef(new Animated.Value(1)).current;
+
+  const handleDelete = () => {
+    Animated.timing(anim, {
+      toValue: 0,
+      duration: 220,
+      useNativeDriver: true,
+    }).start(() => {
+      // smooths the reflow of the remaining entries once this one is actually removed from the array
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      onDelete?.(log.id);
+    });
+  };
+
   return (
-    <View style={styles.entry}>
-      <View style={styles.left}>
-        <IconButton icon={Icon} background />
-        <View style={styles.textBlock}>
-          <Text style={styles.logLabel}>{log.label}</Text>
-          <Text style={styles.logTime}>{formatTime(log.logged_at ?? '')}</Text>
+    <Animated.View
+      style={{
+        opacity: anim,
+        transform: [{ scale: anim.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1] }) }],
+      }}>
+      <View style={styles.entry}>
+        <View style={styles.left}>
+          <IconButton icon={Icon} background />
+          <View style={styles.textBlock}>
+            <Text style={styles.logLabel}>{log.label}</Text>
+            <Text style={styles.logTime}>{formatTime(log.logged_at ?? '')}</Text>
+          </View>
+        </View>
+
+        <View style={styles.right}>
+          <Text style={styles.logAmount}>{log.amount_ml} ml</Text>
+
+          {showDelete && (
+            <IconButton
+              icon={TrashIcon}
+              size={18}
+              color={colors.tabInactive}
+              background={false}
+              onPress={handleDelete}
+            />
+          )}
         </View>
       </View>
-      <Text style={styles.logAmount}>{log.amount_ml} ml</Text>
-    </View>
+    </Animated.View>
   );
 }
 
-export default function TodayLogs({ logs }: Props) {
+export default function TodayLogs({ logs, onDelete }: Props) {
   const [modalVisible, setModalVisible] = useState(false);
 
   if (logs.length === 0) return null;
@@ -59,7 +118,7 @@ export default function TodayLogs({ logs }: Props) {
           <Text style={styles.sheetTitle}>Today's logs</Text>
           <ScrollView contentContainerStyle={styles.sheetContent} showsVerticalScrollIndicator={false}>
             {logs.map((log) => (
-              <LogEntry key={log.id} log={log} />
+              <LogEntry key={log.id} log={log} showDelete onDelete={onDelete} />
             ))}
           </ScrollView>
         </View>
@@ -155,5 +214,10 @@ const styles = StyleSheet.create({
   sheetContent: {
     gap: 10,
     paddingBottom: 20,
+  },
+  right: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
 });

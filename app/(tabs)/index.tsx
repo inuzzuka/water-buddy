@@ -27,10 +27,10 @@ export default function Ritual() {
 
   return (
     <ScreenContent>
-      <BuddyMascot size={160} bubble={`${greeting}, ${firstName}! Time for a refreshing sip?`} />
+      <BuddyMascot size={100} bubble={`${greeting}, ${firstName}! Time for a refreshing sip?`} />
       <WaterIntakeDisplay consumedMl={goal?.consumed_ml ?? 0} goalMl={goal?.goal_ml ?? 2500} />
       <QuickAddButtons
-        onQuickAdd={() => logDrink(defaultQuickAddMl, 'Quick Add')}
+        onQuickAdd={(label) => logDrink(defaultQuickAddMl, label)}
         onOther={() => setModalVisible(true)}
         quickAddLabel={defaultQuickAddMl}
       />

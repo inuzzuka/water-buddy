@@ -20,6 +20,7 @@ type WaterBuddyContextType = {
   setDefaultQuickAddMl: (ml: number) => void | Promise<void>;
   logDrink: (amount_ml: number, label?: string) => Promise<void>;
   refreshSettings: () => Promise<void>;
+  deleteLog: (id: number) => Promise<void>;
 };
 
 type ReminderSettings = {
@@ -161,6 +162,12 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
     });
   };
 
+  const deleteLog = async (id: number) => {
+    if (!user?.id) return;
+    await db.waterLogs.deleteLog(id, user.id);
+    refresh();
+  };
+
   return (
     <WaterBuddyContext.Provider
       value={{
@@ -177,6 +184,7 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
         appSettings,
         setDefaultQuickAddMl,
         logDrink,
+        deleteLog,
         refreshSettings,
       }}>
       {children}
