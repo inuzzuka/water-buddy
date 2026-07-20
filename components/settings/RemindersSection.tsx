@@ -3,8 +3,8 @@ import { colors } from '@/constants/colors';
 import { fonts } from '@/constants/typography';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Button from '../ui/Button';
-import IconButton from '../ui/IconButton';
+import Button from '../../components/ui/Button';
+import IconButton from '../../components/ui/IconButton';
 
 type FrequencyOption = 60 | 120 | 'custom';
 

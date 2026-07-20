@@ -1,10 +1,10 @@
-import AddWaterModal from '@/components/features/AddWaterModal';
-import BuddyMascot from '@/components/features/BuddyMascot';
-import BuddyTipCard from '@/components/features/BuddyTipCard';
-import QuickAddButtons from '@/components/features/QuickAddButtons';
-import { LastSipCard, StreakCard } from '@/components/features/StatCards';
-import WaterIntakeDisplay from '@/components/features/WaterIntakeDisplay';
 import ScreenContent from '@/components/layout/ScreenContent';
+import AddWaterModal from '@/components/ritual/AddWaterModal';
+import BuddyMascot from '@/components/ritual/BuddyMascot';
+import BuddyTipCard from '@/components/ritual/BuddyTipCard';
+import { LastSipCard, StreakCard } from '@/components/ritual/LastSipCard';
+import QuickAddButtons from '@/components/ritual/QuickAddButtons';
+import WaterIntakeDisplay from '@/components/ritual/WaterIntakeDisplay';
 import { useWaterBuddyContext } from '@/context/WaterBuddyContext';
 import { useState } from 'react';
 import { View } from 'react-native';

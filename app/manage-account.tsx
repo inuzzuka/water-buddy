@@ -1,6 +1,6 @@
 import ProfileIcon from '@/assets/icons/profile.svg';
-import BuddyMascot from '@/components/features/BuddyMascot';
 import AppHeader from '@/components/layout/AppHeader';
+import BuddyMascot from '@/components/ritual/BuddyMascot';
 import Button from '@/components/ui/Button';
 import FormInput from '@/components/ui/FormInput';
 import { colors } from '@/constants/colors';

@@ -1,7 +1,7 @@
-import MotivationCard from '@/components/features/MotivationCard';
-import TodayLogs from '@/components/features/TodayLogs';
-import WaterBarChart from '@/components/features/WaterBarChart';
-import WeeklyFlow from '@/components/features/WeeklyFlow';
+import MotivationCard from '@/components/journal/MotivationCard';
+import TodayLogs from '@/components/journal/TodayLogs';
+import WaterBarChart from '@/components/journal/WaterBarChart';
+import WeeklyFlow from '@/components/journal/WeeklyFlow';
 import ScreenContent from '@/components/layout/ScreenContent';
 import { useWaterBuddyContext } from '@/context/WaterBuddyContext';
 import { useEffect, useState } from 'react';

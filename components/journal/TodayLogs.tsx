@@ -4,23 +4,8 @@ import { colors } from '@/constants/colors';
 import { fonts } from '@/constants/typography';
 import { WaterLog } from '@/db/types';
 import { useRef, useState } from 'react';
-import {
-  Animated,
-  LayoutAnimation,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  UIManager,
-  View,
-} from 'react-native';
+import { Animated, LayoutAnimation, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import IconButton from '../ui/IconButton';
-
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 type Props = {
   logs: WaterLog[];

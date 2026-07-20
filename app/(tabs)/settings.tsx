@@ -1,9 +1,9 @@
-import BuddyProfile from '@/components/features/BuddyProfile';
-import DailyGoalSlider from '@/components/features/DailyGoalSlider';
-import FeedbackSection from '@/components/features/FeedbackSection';
-import FocusTimeSection from '@/components/features/QuietHoursSection';
-import RemindersSection from '@/components/features/RemindersSection';
 import ScreenContent from '@/components/layout/ScreenContent';
+import BuddyProfile from '@/components/settings/BuddyProfile';
+import DailyGoalSlider from '@/components/settings/DailyGoalSlider';
+import FeedbackSection from '@/components/settings/FeedbackSection';
+import QuietHoursSection from '@/components/settings/QuietHoursSection';
+import RemindersSection from '@/components/settings/RemindersSection';
 import { useWaterBuddyContext } from '@/context/WaterBuddyContext';
 import { updateReminderNotifications } from '@/services/notificationService';
 import { router } from 'expo-router';
@@ -91,7 +91,7 @@ export default function Settings() {
         initialFrequency={reminderSettings?.frequency ?? 60}
       />
 
-      <FocusTimeSection
+      <QuietHoursSection
         initialEnabled={quietHours?.enabled ?? false}
         initialStart={quietHours?.start ?? '22:00'}
         initialEnd={quietHours?.end ?? '07:00'}
