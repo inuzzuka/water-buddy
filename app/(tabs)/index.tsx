@@ -1,5 +1,4 @@
 import ScreenContent from "@/components/layout/ScreenContent";
-import { useWaterBuddyContext } from "@/context/WaterBuddyContext";
 import AddWaterModal from "@/features/ritual/components/AddWaterModal";
 import BuddyMascot from "@/features/ritual/components/BuddyMascot";
 import BuddyTipCard from "@/features/ritual/components/BuddyTipCard";
@@ -7,6 +6,7 @@ import {
   LastSipCard,
   StreakCard,
 } from "@/features/ritual/components/LastSipCard";
+import { useRitual } from "@/features/ritual/hooks/useRitual";
 import QuickAddButtons from "@/features/water/components/QuickAddButtons";
 import WaterIntakeDisplay from "@/features/water/components/WaterIntakeDisplay";
 import { useState } from "react";
@@ -21,15 +21,7 @@ function getGreeting() {
 }
 
 export default function Ritual() {
-  const {
-    user,
-    goal,
-    logDrink,
-    defaultQuickAddMl,
-    setDefaultQuickAddMl,
-    tip,
-    logs,
-  } = useWaterBuddyContext();
+  const { user, goal, tip, logs, defaultQuickAddMl, addWater } = useRitual();
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -47,7 +39,7 @@ export default function Ritual() {
         goalMl={goal?.goal_ml ?? 2500}
       />
       <QuickAddButtons
-        onQuickAdd={(label) => logDrink(defaultQuickAddMl, label)}
+        onQuickAdd={() => addWater(defaultQuickAddMl, "Water", false)}
         onOther={() => setModalVisible(true)}
         quickAddLabel={defaultQuickAddMl}
       />
@@ -71,8 +63,7 @@ export default function Ritual() {
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         onConfirm={(amount, label, isDefault) => {
-          logDrink(amount, label);
-          if (isDefault) setDefaultQuickAddMl(amount);
+          addWater(amount, label, isDefault);
         }}
       />
     </ScreenContent>

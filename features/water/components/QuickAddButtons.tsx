@@ -2,10 +2,9 @@ import WaterGlass from "@/assets/icons/water-glass.svg";
 import { colors } from "@/constants/colors";
 import { fonts } from "@/constants/typography";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { getDefaultWaterLabel } from "../../ritual/components/AddWaterModal";
 
 type Props = {
-  onQuickAdd: (label: string) => void;
+  onQuickAdd: () => void | Promise<void>;
   onOther: () => void;
   quickAddLabel?: number;
 };
@@ -22,10 +21,7 @@ export default function QuickAddButtons({
         <Text style={styles.otherLabel}>Other</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.quickAddButton}
-        onPress={() => onQuickAdd(getDefaultWaterLabel())}
-      >
+      <TouchableOpacity style={styles.quickAddButton} onPress={onQuickAdd}>
         <WaterGlass width={28} height={28} color={colors.primaryDark} />
         <Text style={styles.quickAddLabel}>+{quickAddLabel} ml</Text>
       </TouchableOpacity>

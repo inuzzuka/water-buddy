@@ -1,4 +1,3 @@
-export { WaterLogRepository } from "../features/water/repositories/WaterLogRepository";
 export { BuddyTipRepository } from "./repositories/BuddyTipRepository";
 export { DailyGoalRepository } from "./repositories/DailyGoalRepository";
 export { ReminderRepository } from "./repositories/ReminderRepository";
