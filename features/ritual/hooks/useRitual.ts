@@ -1,11 +1,13 @@
 import { useWaterBuddyContext } from "@/context/WaterBuddyContext";
 import { useGoal } from "@/features/goals/hooks/useGoal";
+import { useSettings } from "@/features/settings/hooks/useSettings";
 import { useWater } from "@/features/water/hooks/useWater";
 import { useWaterLogs } from "@/features/water/hooks/useWaterLogs";
 
 export function useRitual() {
-  const { user, defaultQuickAddMl, setDefaultQuickAddMl } =
-    useWaterBuddyContext();
+  const { user } = useWaterBuddyContext();
+
+  const { defaultQuickAddMl, setDefaultQuickAddMl } = useSettings();
 
   const { addDrink } = useWater();
 

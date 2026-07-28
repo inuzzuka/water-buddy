@@ -12,7 +12,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ManageAccount() {
-  const { user, db, refreshSettings } = useWaterBuddyContext();
+  const { user, db } = useWaterBuddyContext();
   const insets = useSafeAreaInsets();
 
   const [firstName, setFirstName] = useState(user?.first_name ?? "");
@@ -26,7 +26,11 @@ export default function ManageAccount() {
       last_name: lastName,
       email,
     });
-    refreshSettings();
+    const updatedUser = await db.users.findById(user.id);
+
+    if (updatedUser) {
+      // update local state later
+    }
     router.back();
   };
 
