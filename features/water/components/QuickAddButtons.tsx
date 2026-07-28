@@ -1,8 +1,8 @@
-import WaterGlass from '@/assets/icons/water-glass.svg';
-import { colors } from '@/constants/colors';
-import { fonts } from '@/constants/typography';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { getDefaultWaterLabel } from './AddWaterModal';
+import WaterGlass from "@/assets/icons/water-glass.svg";
+import { colors } from "@/constants/colors";
+import { fonts } from "@/constants/typography";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { getDefaultWaterLabel } from "../../ritual/components/AddWaterModal";
 
 type Props = {
   onQuickAdd: (label: string) => void;
@@ -10,7 +10,11 @@ type Props = {
   quickAddLabel?: number;
 };
 
-export default function QuickAddButtons({ onQuickAdd, onOther, quickAddLabel = 400 }: Props) {
+export default function QuickAddButtons({
+  onQuickAdd,
+  onOther,
+  quickAddLabel = 400,
+}: Props) {
   return (
     <View style={styles.row}>
       <TouchableOpacity style={styles.otherButton} onPress={onOther}>
@@ -18,7 +22,10 @@ export default function QuickAddButtons({ onQuickAdd, onOther, quickAddLabel = 4
         <Text style={styles.otherLabel}>Other</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.quickAddButton} onPress={() => onQuickAdd(getDefaultWaterLabel())}>
+      <TouchableOpacity
+        style={styles.quickAddButton}
+        onPress={() => onQuickAdd(getDefaultWaterLabel())}
+      >
         <WaterGlass width={28} height={28} color={colors.primaryDark} />
         <Text style={styles.quickAddLabel}>+{quickAddLabel} ml</Text>
       </TouchableOpacity>
@@ -28,16 +35,16 @@ export default function QuickAddButtons({ onQuickAdd, onOther, quickAddLabel = 4
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 25,
     marginVertical: 16,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   otherButton: {
     width: 100,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 6,
     paddingVertical: 25,
     borderRadius: 50,
@@ -55,9 +62,9 @@ const styles = StyleSheet.create({
   },
   quickAddButton: {
     width: 165,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 6,
     paddingVertical: 20,
     borderRadius: 50,

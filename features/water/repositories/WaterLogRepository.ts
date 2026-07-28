@@ -1,9 +1,9 @@
-import { BaseRepository } from '../BaseRepository';
-import type { WaterLog } from '../types';
-import { isoDate, now } from '../utils/dateHelpers';
+import { BaseRepository } from "@/db/BaseRepository";
+import type { WaterLog } from "@/db/types";
+import { isoDate, now } from "@/db/utils/dateHelpers";
 
 export class WaterLogRepository extends BaseRepository<WaterLog> {
-  protected tableName = 'water_logs';
+  protected tableName = "water_logs";
 
   /**
    * Log a drink and update the daily goal total in one transaction.
@@ -12,13 +12,13 @@ export class WaterLogRepository extends BaseRepository<WaterLog> {
   async logDrink(
     userId: number,
     amount_ml: number,
-    label: string = 'Water',
+    label: string = "Water",
   ): Promise<{ logId: number; newTotal: number }> {
     const db = await this.db();
     let logId = 0;
     let newTotal = 0;
 
-    await db.execAsync('BEGIN');
+    await db.execAsync("BEGIN");
     try {
       const result = await db.runAsync(
         `INSERT INTO water_logs (user_id, amount_ml, label, logged_at) VALUES (?, ?, ?, ?)`,
@@ -51,9 +51,9 @@ export class WaterLogRepository extends BaseRepository<WaterLog> {
         today,
       );
       newTotal = row?.consumed_ml ?? 0;
-      await db.execAsync('COMMIT');
+      await db.execAsync("COMMIT");
     } catch (e) {
-      await db.execAsync('ROLLBACK');
+      await db.execAsync("ROLLBACK");
       throw e;
     }
 
@@ -63,8 +63,11 @@ export class WaterLogRepository extends BaseRepository<WaterLog> {
   /** All logs for a specific calendar day, newest first. */
   async getLogsForDate(userId: number, date: string): Promise<WaterLog[]> {
     return this.findAll({
-      where: { clause: 'user_id = ? AND date(logged_at) = ?', args: [userId, date] },
-      orderBy: { column: 'logged_at', direction: 'DESC' },
+      where: {
+        clause: "user_id = ? AND date(logged_at) = ?",
+        args: [userId, date],
+      },
+      orderBy: { column: "logged_at", direction: "DESC" },
     });
   }
 
@@ -74,7 +77,11 @@ export class WaterLogRepository extends BaseRepository<WaterLog> {
   }
 
   /** Daily ml totals over a date range — drives the Weekly/Monthly analytics chart. */
-  async getDailyTotals(user: number, fromDate: string, toDate: string): Promise<{ date: string; total_ml: number }[]> {
+  async getDailyTotals(
+    user: number,
+    fromDate: string,
+    toDate: string,
+  ): Promise<{ date: string; total_ml: number }[]> {
     const db = await this.db();
     return db.getAllAsync<{ date: string; total_ml: number }>(
       `SELECT date(logged_at) AS date, SUM(amount_ml) AS total_ml
@@ -91,14 +98,17 @@ export class WaterLogRepository extends BaseRepository<WaterLog> {
   /** Delete a log entry and decrement the daily total atomically. */
   async deleteLog(logId: number, userId: number): Promise<void> {
     const db = await this.db();
-    await db.execAsync('BEGIN');
+    await db.execAsync("BEGIN");
     try {
-      const log = await db.getFirstAsync<WaterLog>('SELECT * FROM water_logs WHERE id = ?', logId);
+      const log = await db.getFirstAsync<WaterLog>(
+        "SELECT * FROM water_logs WHERE id = ?",
+        logId,
+      );
       if (!log?.logged_at) {
-        await db.execAsync('COMMIT');
+        await db.execAsync("COMMIT");
         return;
       }
-      await db.runAsync('DELETE FROM water_logs WHERE id = ?', logId);
+      await db.runAsync("DELETE FROM water_logs WHERE id = ?", logId);
       await db.runAsync(
         `UPDATE daily_goals
        SET consumed_ml = MAX(0, consumed_ml - ?),
@@ -110,9 +120,9 @@ export class WaterLogRepository extends BaseRepository<WaterLog> {
         userId,
         log.logged_at,
       );
-      await db.execAsync('COMMIT');
+      await db.execAsync("COMMIT");
     } catch (e) {
-      await db.execAsync('ROLLBACK');
+      await db.execAsync("ROLLBACK");
       throw e;
     }
   }

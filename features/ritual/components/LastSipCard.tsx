@@ -1,11 +1,11 @@
-import CheckCircleIcon from '@/assets/icons/check-circle.svg';
-import ClockIcon from '@/assets/icons/clock.svg';
-import FlameIcon from '@/assets/icons/flame.svg';
-import { colors } from '@/constants/colors';
-import { fonts } from '@/constants/typography';
-import { StyleSheet, Text, View } from 'react-native';
+import CheckCircleIcon from "@/assets/icons/check-circle.svg";
+import ClockIcon from "@/assets/icons/clock.svg";
+import FlameIcon from "@/assets/icons/flame.svg";
+import { colors } from "@/constants/colors";
+import { fonts } from "@/constants/typography";
+import { StyleSheet, Text, View } from "react-native";
 
-const STREAK_COLOR = '#934467';
+const STREAK_COLOR = "#934467";
 
 type StreakCardProps = {
   streakDays: number;
@@ -18,9 +18,9 @@ type LastSipCardProps = {
 };
 
 function formatLastSip(lastSipAt: string | null): string {
-  if (!lastSipAt) return 'No sips yet';
+  if (!lastSipAt) return "No sips yet";
   const diff = Math.floor((Date.now() - new Date(lastSipAt).getTime()) / 60000);
-  if (diff < 1) return 'Just now';
+  if (diff < 1) return "Just now";
   if (diff < 60) return `${diff}m ago`;
   const hours = Math.floor(diff / 60);
   return `${hours}h ago`;
@@ -29,12 +29,16 @@ function formatLastSip(lastSipAt: string | null): string {
 function getPaceLabel(lastSipAt: string | null): string | null {
   if (!lastSipAt) return null;
   const diff = Math.floor((Date.now() - new Date(lastSipAt).getTime()) / 60000);
-  if (diff <= 60) return 'GOOD PACE!';
-  if (diff <= 120) return 'KEEP GOING!';
-  return 'DRINK UP!';
+  if (diff <= 60) return "GOOD PACE!";
+  if (diff <= 120) return "KEEP GOING!";
+  return "DRINK UP!";
 }
 
-export function StreakCard({ streakDays, goalMl, consumedMl }: StreakCardProps) {
+export function StreakCard({
+  streakDays,
+  goalMl,
+  consumedMl,
+}: StreakCardProps) {
   const progress = Math.min(consumedMl / goalMl, 1);
 
   return (
@@ -91,21 +95,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 48,
     borderWidth: 1,
-    borderColor: 'rgba(191, 199, 211, 0.2)',
+    borderColor: "rgba(191, 199, 211, 0.2)",
     paddingHorizontal: 15,
     paddingVertical: 50,
     gap: 5,
-    justifyContent: 'center',
+    justifyContent: "center",
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.12,
     shadowRadius: 40,
     elevation: 4,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
   },
   cardLabel: {
@@ -122,9 +126,9 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     height: 8,
-    backgroundColor: '#E4E9EB',
+    backgroundColor: "#E4E9EB",
     borderRadius: 9999,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   progressFill: {
     height: 8,
@@ -140,15 +144,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 16,
     letterSpacing: 0.6,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     color: STREAK_COLOR,
   },
   watermark: {
-    position: 'absolute',
+    position: "absolute",
     bottom: -8,
     right: -4,
     fontSize: 64,
-    color: '#171C1E',
+    color: "#171C1E",
     opacity: 0.07,
   },
 });

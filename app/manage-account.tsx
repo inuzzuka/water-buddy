@@ -1,23 +1,23 @@
-import ProfileIcon from '@/assets/icons/profile.svg';
-import AppHeader from '@/components/layout/AppHeader';
-import BuddyMascot from '@/components/ritual/BuddyMascot';
-import Button from '@/components/ui/Button';
-import FormInput from '@/components/ui/FormInput';
-import { colors } from '@/constants/colors';
-import { fonts } from '@/constants/typography';
-import { useWaterBuddyContext } from '@/context/WaterBuddyContext';
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ProfileIcon from "@/assets/icons/profile.svg";
+import AppHeader from "@/components/layout/AppHeader";
+import Button from "@/components/ui/Button";
+import FormInput from "@/components/ui/FormInput";
+import { colors } from "@/constants/colors";
+import { fonts } from "@/constants/typography";
+import { useWaterBuddyContext } from "@/context/WaterBuddyContext";
+import BuddyMascot from "@/features/ritual/components/BuddyMascot";
+import { router } from "expo-router";
+import { useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ManageAccount() {
   const { user, db, refreshSettings } = useWaterBuddyContext();
   const insets = useSafeAreaInsets();
 
-  const [firstName, setFirstName] = useState(user?.first_name ?? '');
-  const [lastName, setLastName] = useState(user?.last_name ?? '');
-  const [email, setEmail] = useState(user?.email ?? '');
+  const [firstName, setFirstName] = useState(user?.first_name ?? "");
+  const [lastName, setLastName] = useState(user?.last_name ?? "");
+  const [email, setEmail] = useState(user?.email ?? "");
 
   const handleSave = async () => {
     if (!user?.id) return;
@@ -34,13 +34,19 @@ export default function ManageAccount() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <AppHeader title="Water Buddy" onBack={() => router.back()} />
       <ScrollView
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 24 }]}
-        showsVerticalScrollIndicator={false}>
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: insets.bottom + 24 },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
         <BuddyMascot size={120} />
 
         <View style={styles.titleBlock}>
           <Text style={styles.title}>Hi, buddy!</Text>
-          <Text style={styles.subtitle}>Here you can change your name and password.</Text>
+          <Text style={styles.subtitle}>
+            Here you can change your name and password.
+          </Text>
         </View>
 
         <View style={styles.form}>
@@ -94,12 +100,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   content: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: 24,
     gap: 24,
   },
   titleBlock: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: 6,
   },
   title: {
@@ -111,10 +117,10 @@ const styles = StyleSheet.create({
     fontFamily: fonts.jakarta,
     fontSize: 14,
     color: colors.tabInactive,
-    textAlign: 'center',
+    textAlign: "center",
   },
   form: {
-    width: '100%',
+    width: "100%",
     backgroundColor: colors.white,
     borderRadius: 32,
     padding: 24,
@@ -126,26 +132,26 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   changePassword: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     height: 54,
-    backgroundColor: '#EFF4F6',
+    backgroundColor: "#EFF4F6",
     borderRadius: 9999,
     paddingHorizontal: 10,
   },
   changePasswordLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
   iconCircle: {
     width: 40,
     height: 40,
     borderRadius: 9999,
-    backgroundColor: 'rgba(71, 169, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(71, 169, 255, 0.1)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   changePasswordText: {
     fontFamily: fonts.jakarta,
