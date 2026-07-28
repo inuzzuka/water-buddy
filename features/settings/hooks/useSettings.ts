@@ -1,5 +1,5 @@
 import { useWaterBuddyContext } from "@/context/WaterBuddyContext";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ReminderService } from "../services/ReminderService";
 import { SettingsService } from "../services/SettingsService";
 
@@ -21,9 +21,15 @@ type AppSettings = {
 export function useSettings() {
   const { db, user } = useWaterBuddyContext();
 
-  const service = new SettingsService(db.settings, db.reminders);
+  const service = useMemo(
+    () => new SettingsService(db.settings, db.reminders),
+    [db],
+  );
 
-  const reminderService = new ReminderService(db.reminders);
+  const reminderService = useMemo(
+    () => new ReminderService(db.reminders),
+    [db],
+  );
 
   const [defaultQuickAddMl, setDefaultQuickAddMlState] = useState(400);
 

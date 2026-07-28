@@ -1,8 +1,4 @@
-import {
-  useToday,
-  useWaterBuddy,
-  WaterBuddyDB,
-} from "@/db/hooks/useWaterBuddy";
+import { useWaterBuddy, WaterBuddyDB } from "@/db/hooks/useWaterBuddy";
 import { UserRepository } from "@/db/repositories/UserRepository";
 import { User } from "@/db/types";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -53,8 +49,6 @@ export function WaterBuddyProvider({
 
     initUser();
   }, [ready]);
-
-  const { refresh } = useToday(user?.id ?? 0);
 
   return (
     <WaterBuddyContext.Provider

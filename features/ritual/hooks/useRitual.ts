@@ -28,6 +28,7 @@ export function useRitual() {
     goal,
     logs,
     defaultQuickAddMl,
+    setDefaultQuickAddMl,
     addWater,
   };
 }

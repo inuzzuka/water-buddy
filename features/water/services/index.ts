@@ -1,4 +1,4 @@
-import { WaterLogRepository } from "../../water/repositories/WaterLogRepository";
+import { WaterLogRepository } from "../repositories/WaterLogRepository";
 import { WaterService } from "./WaterService";
 
 const waterRepository = new WaterLogRepository();

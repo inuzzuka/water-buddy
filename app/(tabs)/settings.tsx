@@ -8,54 +8,28 @@ import { useWaterBuddyContext } from "@/context/WaterBuddyContext";
 import { useGoal } from "@/features/goals/hooks/useGoal";
 import { useSettings } from "@/features/settings/hooks/useSettings";
 import { router } from "expo-router";
-import { useEffect } from "react";
 
 export default function Settings() {
-  const { user, db } = useWaterBuddyContext();
+  const { user } = useWaterBuddyContext();
 
   const {
     reminderSettings,
     quietHours,
     appSettings,
-    refreshSettings,
     saveReminder,
     saveQuietHours,
     saveSound,
   } = useSettings();
 
-  const { goal } = useGoal();
+  const { goal, updateGoal } = useGoal();
 
   const handleGoalChange = async (ml: number) => {
-    if (!user?.id) return;
-
-    await db.dailyGoals.setGoal(user.id, ml);
-    await refreshSettings();
-  };
-
-  const handleSaveReminder = async (
-    enabled: boolean,
-    frequencyMinutes: number,
-  ) => {
-    await saveReminder(enabled, frequencyMinutes);
-  };
-
-  const handleSaveQuietHours = async (
-    enabled: boolean,
-    start: string,
-    end: string,
-  ) => {
-    await saveQuietHours(enabled, start, end);
+    await updateGoal(ml);
   };
 
   const handleSaveFeedback = async (sound: boolean) => {
     await saveSound(sound);
   };
-
-  useEffect(() => {
-    if (!user?.id) return;
-
-    refreshSettings();
-  }, [user?.id]);
 
   return (
     <ScreenContent>
@@ -72,7 +46,7 @@ export default function Settings() {
       />
 
       <RemindersSection
-        onSave={handleSaveReminder}
+        onSave={saveReminder}
         initialEnabled={reminderSettings?.enabled ?? false}
         initialFrequency={reminderSettings?.frequency ?? 60}
       />
@@ -81,13 +55,10 @@ export default function Settings() {
         initialEnabled={quietHours?.enabled ?? false}
         initialStart={quietHours?.start ?? "22:00"}
         initialEnd={quietHours?.end ?? "07:00"}
-        onSave={handleSaveQuietHours}
+        onSave={saveQuietHours}
       />
 
-      <FeedbackSection
-        onSave={handleSaveFeedback}
-        initialSound={appSettings?.sound}
-      />
+      <FeedbackSection onSave={saveSound} initialSound={appSettings?.sound} />
     </ScreenContent>
   );
 }
