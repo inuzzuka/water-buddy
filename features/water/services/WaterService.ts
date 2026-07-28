@@ -19,4 +19,8 @@ export class WaterService {
 
     return this.repository.getTodayLogs(userId);
   }
+
+  async getDailyTotals(userId: number, fromDate: string, toDate: string) {
+    return this.repository.getDailyTotals(userId, fromDate, toDate);
+  }
 }
