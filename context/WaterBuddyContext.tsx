@@ -1,26 +1,28 @@
-import { useToday, useWaterBuddy, WaterBuddyDB } from '@/db/hooks/useWaterBuddy';
-import { BuddyTipRepository } from '@/db/repositories/BuddyTipRepository';
-import { UserRepository } from '@/db/repositories/UserRepository';
-import { BuddyTip, DailyGoal, User, WaterLog } from '@/db/types';
-import { restoreReminderNotifications } from '@/services/notificationService';
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  useToday,
+  useWaterBuddy,
+  WaterBuddyDB,
+} from "@/db/hooks/useWaterBuddy";
+import { UserRepository } from "@/db/repositories/UserRepository";
+import { User } from "@/db/types";
+import { restoreReminderNotifications } from "@/services/notificationService";
+import { createContext, useContext, useEffect, useState } from "react";
 
 type WaterBuddyContextType = {
   ready: boolean;
   user: User | null;
-  goal: DailyGoal | null;
-  logs: WaterLog[];
-  remaining: number | null;
-  tip: BuddyTip | null;
+
   db: WaterBuddyDB;
+
   reminderSettings: ReminderSettings | null;
   quietHours: QuietHoursSettings | null;
+
   defaultQuickAddMl: number;
   appSettings: AppSettings | null;
+
   setDefaultQuickAddMl: (ml: number) => void | Promise<void>;
-  logDrink: (amount_ml: number, label?: string) => Promise<void>;
+
   refreshSettings: () => Promise<void>;
-  deleteLog: (id: number) => Promise<void>;
 };
 
 type ReminderSettings = {
@@ -40,12 +42,16 @@ type AppSettings = {
 
 const WaterBuddyContext = createContext<WaterBuddyContextType | null>(null);
 
-export function WaterBuddyProvider({ children }: { children: React.ReactNode }) {
+export function WaterBuddyProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { ready, db } = useWaterBuddy();
   const [user, setUser] = useState<User | null>(null);
-  const [tip, setTip] = useState<BuddyTip | null>(null);
   const [defaultQuickAddMl, setDefaultQuickAddMlState] = useState(400);
-  const [reminderSettings, setReminderSettings] = useState<ReminderSettings | null>(null);
+  const [reminderSettings, setReminderSettings] =
+    useState<ReminderSettings | null>(null);
   const [quietHours, setQuietHours] = useState<QuietHoursSettings | null>(null);
   const [appSettings, setAppSettings] = useState<AppSettings>({
     sound: true,
@@ -58,10 +64,10 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
       let foundUser = await userRepo.findById(1);
       if (!foundUser) {
         const id = await userRepo.insert({
-          first_name: 'Buddy',
-          last_name: '',
-          email: 'local@waterbuddy.app',
-          password: '',
+          first_name: "Buddy",
+          last_name: "",
+          email: "local@waterbuddy.app",
+          password: "",
           level: 1,
           xp: 0,
         });
@@ -70,10 +76,6 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
       if (foundUser?.id) {
         setUser(foundUser);
         await db.dailyGoals.recalculateStreak(foundUser.id);
-        const buddyTipRepo = new BuddyTipRepository();
-        await buddyTipRepo.seedDefaultTips(foundUser.id);
-        const nextTip = await buddyTipRepo.getNextTip(foundUser.id);
-        setTip(nextTip);
         const settings = await db.settings.getForUser(foundUser.id);
         if (settings?.default_quick_add_ml) {
           setDefaultQuickAddMlState(settings.default_quick_add_ml);
@@ -109,7 +111,7 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
     })();
   }, [ready]);
 
-  const { goal, logs, remaining, refresh } = useToday(user?.id ?? 0);
+  const { refresh } = useToday(user?.id ?? 0);
 
   const refreshSettings = async () => {
     if (!user?.id) return;
@@ -143,15 +145,6 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
     refresh();
   };
 
-  const logDrink = async (amount_ml: number, label = 'Water') => {
-    if (!user?.id) return;
-    const result = await db.waterLogs.logDrink(user.id, amount_ml, label);
-    if (result.newTotal >= (goal?.goal_ml ?? 2500)) {
-      await db.dailyGoals.recalculateStreak(user.id);
-    }
-    refresh();
-  };
-
   const setDefaultQuickAddMl = async (ml: number) => {
     setDefaultQuickAddMlState(ml);
 
@@ -162,31 +155,24 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
     });
   };
 
-  const deleteLog = async (id: number) => {
-    if (!user?.id) return;
-    await db.waterLogs.deleteLog(id, user.id);
-    refresh();
-  };
-
   return (
     <WaterBuddyContext.Provider
       value={{
         ready: ready && user !== null,
         user,
-        goal,
-        logs,
-        remaining,
-        tip,
+
         db,
+
         defaultQuickAddMl,
+        setDefaultQuickAddMl,
+
         reminderSettings,
         quietHours,
         appSettings,
-        setDefaultQuickAddMl,
-        logDrink,
-        deleteLog,
+
         refreshSettings,
-      }}>
+      }}
+    >
       {children}
     </WaterBuddyContext.Provider>
   );
@@ -194,6 +180,9 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
 
 export function useWaterBuddyContext() {
   const ctx = useContext(WaterBuddyContext);
-  if (!ctx) throw new Error('useWaterBuddyContext must be used inside WaterBuddyProvider');
+  if (!ctx)
+    throw new Error(
+      "useWaterBuddyContext must be used inside WaterBuddyProvider",
+    );
   return ctx;
 }
