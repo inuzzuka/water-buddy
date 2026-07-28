@@ -1,7 +1,6 @@
 import ScreenContent from "@/components/layout/ScreenContent";
 import AddWaterModal from "@/features/ritual/components/AddWaterModal";
 import BuddyMascot from "@/features/ritual/components/BuddyMascot";
-import BuddyTipCard from "@/features/ritual/components/BuddyTipCard";
 import {
   LastSipCard,
   StreakCard,
@@ -21,7 +20,7 @@ function getGreeting() {
 }
 
 export default function Ritual() {
-  const { user, goal, tip, logs, defaultQuickAddMl, addWater } = useRitual();
+  const { user, goal, logs, defaultQuickAddMl, addWater } = useRitual();
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -58,7 +57,7 @@ export default function Ritual() {
         />
         <LastSipCard lastSipAt={logs[0]?.logged_at ?? null} />
       </View>
-      {tip && <BuddyTipCard content={tip.content} />}
+      {/* {tip && <BuddyTipCard content={tip.content} />} */}
       <AddWaterModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}

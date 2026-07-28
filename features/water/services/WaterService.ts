@@ -1,4 +1,4 @@
-import { WaterLogRepository } from "../../water/repositories/WaterLogRepository";
+import { WaterLogRepository } from "../repositories/WaterLogRepository";
 
 export class WaterService {
   constructor(private repository: WaterLogRepository) {}
@@ -12,5 +12,11 @@ export class WaterService {
       ...result,
       logs,
     };
+  }
+
+  async deleteDrink(logId: number, userId: number) {
+    await this.repository.deleteLog(logId, userId);
+
+    return this.repository.getTodayLogs(userId);
   }
 }

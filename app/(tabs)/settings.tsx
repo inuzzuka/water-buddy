@@ -1,16 +1,26 @@
-import ScreenContent from '@/components/layout/ScreenContent';
-import BuddyProfile from '@/components/settings/BuddyProfile';
-import DailyGoalSlider from '@/components/settings/DailyGoalSlider';
-import FeedbackSection from '@/components/settings/FeedbackSection';
-import QuietHoursSection from '@/components/settings/QuietHoursSection';
-import RemindersSection from '@/components/settings/RemindersSection';
-import { useWaterBuddyContext } from '@/context/WaterBuddyContext';
-import { updateReminderNotifications } from '@/services/notificationService';
-import { router } from 'expo-router';
-import { useEffect } from 'react';
+import ScreenContent from "@/components/layout/ScreenContent";
+import BuddyProfile from "@/components/settings/BuddyProfile";
+import DailyGoalSlider from "@/components/settings/DailyGoalSlider";
+import FeedbackSection from "@/components/settings/FeedbackSection";
+import QuietHoursSection from "@/components/settings/QuietHoursSection";
+import RemindersSection from "@/components/settings/RemindersSection";
+import { useWaterBuddyContext } from "@/context/WaterBuddyContext";
+import { useGoal } from "@/features/goals/hooks/useGoal";
+import { updateReminderNotifications } from "@/services/notificationService";
+import { router } from "expo-router";
+import { useEffect } from "react";
 
 export default function Settings() {
-  const { user, db, goal, reminderSettings, quietHours, appSettings, refreshSettings } = useWaterBuddyContext();
+  const {
+    user,
+    db,
+    reminderSettings,
+    quietHours,
+    appSettings,
+    refreshSettings,
+  } = useWaterBuddyContext();
+
+  const { goal } = useGoal();
 
   const handleGoalChange = async (ml: number) => {
     if (!user?.id) return;
@@ -37,7 +47,10 @@ export default function Settings() {
     });
   };
 
-  const handleSaveReminder = async (enabled: boolean, frequencyMinutes: number) => {
+  const handleSaveReminder = async (
+    enabled: boolean,
+    frequencyMinutes: number,
+  ) => {
     if (!user?.id) return;
 
     await db.reminders.saveForUser(user.id, {
@@ -49,7 +62,11 @@ export default function Settings() {
     await refreshNotifications();
   };
 
-  const handleSaveQuietHours = async (enabled: boolean, start: string, end: string) => {
+  const handleSaveQuietHours = async (
+    enabled: boolean,
+    start: string,
+    end: string,
+  ) => {
     if (!user?.id) return;
 
     await db.reminders.saveForUser(user.id, {
@@ -81,9 +98,17 @@ export default function Settings() {
 
   return (
     <ScreenContent>
-      {user && <BuddyProfile user={user} onManageAccount={() => router.push('/manage-account')} />}
+      {user && (
+        <BuddyProfile
+          user={user}
+          onManageAccount={() => router.push("/manage-account")}
+        />
+      )}
 
-      <DailyGoalSlider goalMl={goal?.goal_ml ?? 2500} onGoalChange={handleGoalChange} />
+      <DailyGoalSlider
+        goalMl={goal?.goal_ml ?? 2500}
+        onGoalChange={handleGoalChange}
+      />
 
       <RemindersSection
         onSave={handleSaveReminder}
@@ -93,11 +118,14 @@ export default function Settings() {
 
       <QuietHoursSection
         initialEnabled={quietHours?.enabled ?? false}
-        initialStart={quietHours?.start ?? '22:00'}
-        initialEnd={quietHours?.end ?? '07:00'}
+        initialStart={quietHours?.start ?? "22:00"}
+        initialEnd={quietHours?.end ?? "07:00"}
         onSave={handleSaveQuietHours}
       />
-      <FeedbackSection onSave={handleSaveFeedback} initialSound={appSettings?.sound} />
+      <FeedbackSection
+        onSave={handleSaveFeedback}
+        initialSound={appSettings?.sound}
+      />
     </ScreenContent>
   );
 }
