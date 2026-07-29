@@ -3,12 +3,12 @@ import TodayLogs from "@/components/journal/TodayLogs";
 import WaterBarChart from "@/components/journal/WaterBarChart";
 import WeeklyFlow from "@/components/journal/WeeklyFlow";
 import ScreenContent from "@/components/layout/ScreenContent";
-import { useGoal } from "@/features/goals/hooks/useGoal";
+import { useWaterBuddyContext } from "@/context/WaterBuddyContext";
 import { useWaterAnalytics } from "@/features/water/hooks/useWaterAnalytics";
 import { useWaterLogs } from "@/features/water/hooks/useWaterLogs";
 
 export default function Journal() {
-  const { goal } = useGoal();
+  const { goal, consumedMl } = useWaterBuddyContext();
 
   const { logs, deleteLog } = useWaterLogs();
 
@@ -27,10 +27,7 @@ export default function Journal() {
 
       <TodayLogs logs={logs} onDelete={deleteLog} />
 
-      <MotivationCard
-        consumed_ml={goal?.consumed_ml ?? 0}
-        goal_ml={goal?.goal_ml ?? 2500}
-      />
+      <MotivationCard consumedMl={consumedMl} goalMl={goal?.goal_ml ?? 2500} />
     </ScreenContent>
   );
 }

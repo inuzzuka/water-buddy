@@ -13,7 +13,12 @@ export class BuddyTipRepository extends BaseRepository<BuddyTip> {
     });
 
     if (unseen) {
-      await this.update(unseen.id!, { shown_at: now() });
+      unseen.shown_at = now();
+
+      await this.update(unseen.id!, {
+        shown_at: unseen.shown_at,
+      });
+
       return unseen;
     }
 

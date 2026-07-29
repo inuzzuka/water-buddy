@@ -76,6 +76,23 @@ export class WaterLogRepository extends BaseRepository<WaterLog> {
     return this.getLogsForDate(userId, isoDate());
   }
 
+  /** Today's consumption total — returns the total amount of water consumed today. */
+  async getTodayTotal(userId: number): Promise<number> {
+    const db = await this.db();
+
+    const result = await db.getFirstAsync<{ total: number }>(
+      `
+    SELECT COALESCE(SUM(amount_ml),0) as total
+    FROM water_logs
+    WHERE user_id = ?
+    AND date(logged_at)=date('now')
+    `,
+      userId,
+    );
+
+    return result?.total ?? 0;
+  }
+
   /** Daily ml totals over a date range — drives the Weekly/Monthly analytics chart. */
   async getDailyTotals(
     user: number,

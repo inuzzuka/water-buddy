@@ -6,7 +6,7 @@
  *   npx expo install expo-sqlite
  */
 
-import * as SQLite from 'expo-sqlite';
+import * as SQLite from "expo-sqlite";
 
 export type Migration = { version: number; up: string[] };
 
@@ -50,7 +50,6 @@ const MIGRATIONS: Migration[] = [
         user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         date         TEXT    NOT NULL DEFAULT (datetime('now')),
         goal_ml      INTEGER NOT NULL DEFAULT 2500,
-        consumed_ml  INTEGER NOT NULL DEFAULT 0,
         streak_days  INTEGER NOT NULL DEFAULT 0,
         completed    INTEGER NOT NULL DEFAULT 0,
         created_at   TEXT    NOT NULL DEFAULT (datetime('now')),
@@ -111,9 +110,9 @@ export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
   if (_initPromise) return _initPromise;
 
   _initPromise = (async () => {
-    const db = await SQLite.openDatabaseAsync('waterbuddy.db');
-    await db.execAsync('PRAGMA journal_mode = WAL;');
-    await db.execAsync('PRAGMA foreign_keys = ON;');
+    const db = await SQLite.openDatabaseAsync("waterbuddy.db");
+    await db.execAsync("PRAGMA journal_mode = WAL;");
+    await db.execAsync("PRAGMA foreign_keys = ON;");
     await runMigrations(db);
     _db = db;
     return db;
@@ -140,21 +139,24 @@ async function runMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
   `);
 
   const row = await db.getFirstAsync<{ version: number }>(
-    'SELECT COALESCE(MAX(version), 0) AS version FROM _migrations',
+    "SELECT COALESCE(MAX(version), 0) AS version FROM _migrations",
   );
   const current = row?.version ?? 0;
   const pending = MIGRATIONS.filter((m) => m.version > current);
 
   for (const migration of pending) {
-    await db.execAsync('BEGIN');
+    await db.execAsync("BEGIN");
     try {
       for (const sql of migration.up) {
         await db.execAsync(sql);
       }
-      await db.runAsync('INSERT INTO _migrations (version) VALUES (?)', migration.version);
-      await db.execAsync('COMMIT');
+      await db.runAsync(
+        "INSERT INTO _migrations (version) VALUES (?)",
+        migration.version,
+      );
+      await db.execAsync("COMMIT");
     } catch (e) {
-      await db.execAsync('ROLLBACK');
+      await db.execAsync("ROLLBACK");
       throw e;
     }
     console.log(`[WaterBuddy DB] Migration v${migration.version} applied.`);

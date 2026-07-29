@@ -20,10 +20,10 @@ function getGreeting() {
 }
 
 export default function Ritual() {
-  const { user, goal, logs, defaultQuickAddMl, addWater } = useRitual();
+  const { user, goal, logs, consumedMl, defaultQuickAddMl, addWater } =
+    useRitual();
 
   const [modalVisible, setModalVisible] = useState(false);
-
   const greeting = getGreeting();
   const firstName = user?.first_name ?? "Buddy";
 
@@ -34,7 +34,7 @@ export default function Ritual() {
         bubble={`${greeting}, ${firstName}! Time for a refreshing sip?`}
       />
       <WaterIntakeDisplay
-        consumedMl={goal?.consumed_ml ?? 0}
+        consumedMl={consumedMl ?? 0}
         goalMl={goal?.goal_ml ?? 2500}
       />
       <QuickAddButtons
@@ -53,7 +53,7 @@ export default function Ritual() {
         <StreakCard
           streakDays={goal?.streak_days ?? 0}
           goalMl={goal?.goal_ml ?? 2500}
-          consumedMl={goal?.consumed_ml ?? 0}
+          consumedMl={consumedMl ?? 0}
         />
         <LastSipCard lastSipAt={logs[0]?.logged_at ?? null} />
       </View>
