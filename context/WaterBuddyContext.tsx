@@ -1,5 +1,4 @@
 import { useWaterBuddy } from "@/db/hooks/useWaterBuddy";
-import { UserRepository } from "@/db/repositories/UserRepository";
 import { DailyGoal, User, WaterLog } from "@/db/types";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -9,10 +8,12 @@ type WaterBuddyContextType = {
   db: ReturnType<typeof useWaterBuddy>["db"];
 
   goal: DailyGoal | null;
-  logs: WaterLog[];
+
   consumedMl: number;
 
-  refreshToday: () => Promise<void>;
+  logs: WaterLog[];
+
+  refreshWater: () => void;
 };
 
 const WaterBuddyContext = createContext<WaterBuddyContextType | null>(null);
@@ -27,33 +28,35 @@ export function WaterBuddyProvider({
   const [user, setUser] = useState<User | null>(null);
 
   const [goal, setGoal] = useState<DailyGoal | null>(null);
-  const [logs, setLogs] = useState<WaterLog[]>([]);
+
   const [consumedMl, setConsumedMl] = useState(0);
 
-  async function refreshToday() {
+  const [logs, setLogs] = useState<WaterLog[]>([]);
+
+  const refreshWater = async () => {
     if (!user?.id) return;
 
-    const [dailyGoal, todayLogs, totalConsumed] = await Promise.all([
-      db.dailyGoals.getToday(user.id),
-      db.waterLogs.getTodayLogs(user.id),
-      db.waterLogs.getTodayTotal(user.id),
+    const userId = user.id;
+
+    const [todayGoal, todayLogs, total] = await Promise.all([
+      db.dailyGoals.getToday(userId),
+      db.waterLogs.getTodayLogs(userId),
+      db.waterLogs.getTodayTotal(userId),
     ]);
 
-    setGoal(dailyGoal);
+    setGoal(todayGoal);
+    setConsumedMl(total);
     setLogs(todayLogs);
-    setConsumedMl(totalConsumed);
-  }
+  };
 
   useEffect(() => {
     if (!ready) return;
 
     async function initUser() {
-      const userRepo = new UserRepository();
-
-      let foundUser = await userRepo.findById(1);
+      let foundUser = await db.users.findById(1);
 
       if (!foundUser) {
-        const id = await userRepo.insert({
+        const id = await db.users.insert({
           first_name: "Buddy",
           last_name: "",
           email: "local@waterbuddy.app",
@@ -62,41 +65,39 @@ export function WaterBuddyProvider({
           xp: 0,
         });
 
-        foundUser = await userRepo.findById(id);
+        foundUser = await db.users.findById(id);
       }
 
       if (foundUser) {
         setUser(foundUser);
 
-        await db.dailyGoals.recalculateStreak(foundUser.id!);
+        if (!foundUser.id) return;
 
-        const [dailyGoal, todayLogs, totalConsumed] = await Promise.all([
-          db.dailyGoals.getToday(foundUser.id!),
-          db.waterLogs.getTodayLogs(foundUser.id!),
-          db.waterLogs.getTodayTotal(foundUser.id!),
-        ]);
-
-        setGoal(dailyGoal);
-        setLogs(todayLogs);
-        setConsumedMl(totalConsumed);
+        await db.dailyGoals.recalculateStreak(foundUser.id);
       }
     }
 
-    initUser();
-  }, [ready]);
+    initUser().catch(console.error);
+  }, [ready, db]);
+
+  useEffect(() => {
+    if (!ready || !user?.id) return;
+
+    refreshWater().catch(console.error);
+  }, [ready, user?.id]);
 
   return (
     <WaterBuddyContext.Provider
       value={{
-        ready: ready && user !== null,
+        ready,
         user,
         db,
 
         goal,
-        logs,
         consumedMl,
+        logs,
 
-        refreshToday,
+        refreshWater,
       }}
     >
       {children}

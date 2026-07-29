@@ -3,7 +3,7 @@ import { useSettings } from "@/features/settings/hooks/useSettings";
 import { useWater } from "@/features/water/hooks/useWater";
 
 export function useRitual() {
-  const { user, goal, logs, consumedMl, refreshToday } = useWaterBuddyContext();
+  const { user, goal, logs, consumedMl, refreshWater } = useWaterBuddyContext();
 
   const { defaultQuickAddMl, setDefaultQuickAddMl } = useSettings();
 
@@ -16,7 +16,7 @@ export function useRitual() {
       await setDefaultQuickAddMl(amount);
     }
 
-    await refreshToday();
+    await refreshWater();
   }
 
   return {
