@@ -6,8 +6,9 @@ export class WaterLogRepository extends BaseRepository<WaterLog> {
   protected tableName = "water_logs";
 
   /**
-   * Log a drink and update the daily goal total in one transaction.
-   * This is the primary write path — always use this instead of insert().
+   * Creates a new water log entry.
+   * The daily consumed amount is calculated from water_logs,
+   * so no daily_goals update is needed here.
    */
   async logDrink(
     userId: number,
@@ -15,49 +16,25 @@ export class WaterLogRepository extends BaseRepository<WaterLog> {
     label: string = "Water",
   ): Promise<{ logId: number; newTotal: number }> {
     const db = await this.db();
-    let logId = 0;
-    let newTotal = 0;
 
-    await db.execAsync("BEGIN");
-    try {
-      const result = await db.runAsync(
-        `INSERT INTO water_logs (user_id, amount_ml, label, logged_at) VALUES (?, ?, ?, ?)`,
-        userId,
-        amount_ml,
-        label,
-        now(),
-      );
-      logId = result.lastInsertRowId;
+    const result = await db.runAsync(
+      `
+      INSERT INTO water_logs 
+        (user_id, amount_ml, label, logged_at)
+      VALUES (?, ?, ?, ?)
+      `,
+      userId,
+      amount_ml,
+      label,
+      now(),
+    );
 
-      const today = isoDate();
-      await db.runAsync(
-        `INSERT INTO daily_goals (user_id, date, goal_ml, consumed_ml, streak_days, completed)
-       VALUES (?, ?, 2500, ?, 0, 0)
-       ON CONFLICT(user_id, date) DO UPDATE SET
-         consumed_ml = consumed_ml + ?,
-         completed   = CASE WHEN consumed_ml + ? >= goal_ml THEN 1 ELSE 0 END,
-         updated_at  = ?`,
-        userId,
-        today,
-        amount_ml,
-        amount_ml,
-        amount_ml,
-        now(),
-      );
+    const newTotal = await this.getTodayTotal(userId);
 
-      const row = await db.getFirstAsync<{ consumed_ml: number }>(
-        `SELECT consumed_ml FROM daily_goals WHERE user_id = ? AND date = ?`,
-        userId,
-        today,
-      );
-      newTotal = row?.consumed_ml ?? 0;
-      await db.execAsync("COMMIT");
-    } catch (e) {
-      await db.execAsync("ROLLBACK");
-      throw e;
-    }
-
-    return { logId, newTotal };
+    return {
+      logId: result.lastInsertRowId,
+      newTotal,
+    };
   }
 
   /** All logs for a specific calendar day, newest first. */
@@ -67,7 +44,10 @@ export class WaterLogRepository extends BaseRepository<WaterLog> {
         clause: "user_id = ? AND date(logged_at) = ?",
         args: [userId, date],
       },
-      orderBy: { column: "logged_at", direction: "DESC" },
+      orderBy: {
+        column: "logged_at",
+        direction: "DESC",
+      },
     });
   }
 
@@ -76,71 +56,70 @@ export class WaterLogRepository extends BaseRepository<WaterLog> {
     return this.getLogsForDate(userId, isoDate());
   }
 
-  /** Today's consumption total — returns the total amount of water consumed today. */
+  /**
+   * Returns total water consumed today.
+   * Source of truth for progress UI.
+   */
   async getTodayTotal(userId: number): Promise<number> {
     const db = await this.db();
 
     const result = await db.getFirstAsync<{ total: number }>(
       `
-    SELECT COALESCE(SUM(amount_ml),0) as total
-    FROM water_logs
-    WHERE user_id = ?
-    AND date(logged_at)=date('now')
-    `,
+      SELECT COALESCE(SUM(amount_ml), 0) AS total
+      FROM water_logs
+      WHERE user_id = ?
+      AND date(logged_at) = date('now')
+      `,
       userId,
     );
 
     return result?.total ?? 0;
   }
 
-  /** Daily ml totals over a date range — drives the Weekly/Monthly analytics chart. */
+  /**
+   * Daily totals over a date range.
+   * Used by Weekly/Monthly charts.
+   */
   async getDailyTotals(
-    user: number,
+    userId: number,
     fromDate: string,
     toDate: string,
   ): Promise<{ date: string; total_ml: number }[]> {
     const db = await this.db();
+
     return db.getAllAsync<{ date: string; total_ml: number }>(
-      `SELECT date(logged_at) AS date, SUM(amount_ml) AS total_ml
-       FROM water_logs
-       WHERE user_id = ? AND date(logged_at) BETWEEN ? AND ?
-       GROUP BY date(logged_at)
-       ORDER BY date(logged_at) ASC`,
-      user,
+      `
+      SELECT 
+        date(logged_at) AS date,
+        SUM(amount_ml) AS total_ml
+      FROM water_logs
+      WHERE user_id = ?
+      AND date(logged_at) BETWEEN ? AND ?
+      GROUP BY date(logged_at)
+      ORDER BY date(logged_at) ASC
+      `,
+      userId,
       fromDate,
       toDate,
     );
   }
 
-  /** Delete a log entry and decrement the daily total atomically. */
+  /**
+   * Deletes a water log entry.
+   * Progress updates automatically because it is calculated
+   * from remaining water_logs.
+   */
   async deleteLog(logId: number, userId: number): Promise<void> {
     const db = await this.db();
-    await db.execAsync("BEGIN");
-    try {
-      const log = await db.getFirstAsync<WaterLog>(
-        "SELECT * FROM water_logs WHERE id = ?",
-        logId,
-      );
-      if (!log?.logged_at) {
-        await db.execAsync("COMMIT");
-        return;
-      }
-      await db.runAsync("DELETE FROM water_logs WHERE id = ?", logId);
-      await db.runAsync(
-        `UPDATE daily_goals
-       SET consumed_ml = MAX(0, consumed_ml - ?),
-           completed   = 0,
-           updated_at  = ?
-       WHERE user_id = ? AND date = date(?)`,
-        log.amount_ml,
-        now(),
-        userId,
-        log.logged_at,
-      );
-      await db.execAsync("COMMIT");
-    } catch (e) {
-      await db.execAsync("ROLLBACK");
-      throw e;
-    }
+
+    await db.runAsync(
+      `
+      DELETE FROM water_logs
+      WHERE id = ?
+      AND user_id = ?
+      `,
+      logId,
+      userId,
+    );
   }
 }
