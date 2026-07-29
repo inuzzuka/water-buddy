@@ -1,4 +1,4 @@
-import { useWaterBuddy, WaterBuddyDB } from "@/db/hooks/useWaterBuddy";
+import { useWaterBuddy } from "@/db/hooks/useWaterBuddy";
 import { UserRepository } from "@/db/repositories/UserRepository";
 import { User } from "@/db/types";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -6,7 +6,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 type WaterBuddyContextType = {
   ready: boolean;
   user: User | null;
-  db: WaterBuddyDB;
+  db: ReturnType<typeof useWaterBuddy>["db"];
 };
 
 const WaterBuddyContext = createContext<WaterBuddyContextType | null>(null);
@@ -65,9 +65,12 @@ export function WaterBuddyProvider({
 
 export function useWaterBuddyContext() {
   const ctx = useContext(WaterBuddyContext);
-  if (!ctx)
+
+  if (!ctx) {
     throw new Error(
       "useWaterBuddyContext must be used inside WaterBuddyProvider",
     );
+  }
+
   return ctx;
 }

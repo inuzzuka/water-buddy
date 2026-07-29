@@ -5,7 +5,8 @@ export { SettingsRepository } from "./repositories/SettingsRepository";
 export { UserRepository } from "./repositories/UserRepository";
 
 // Hooks
-export { useToday, useWaterBuddy } from "./hooks/useWaterBuddy";
+export { useToday } from "./hooks/useToday";
+export { useWaterBuddy } from "./hooks/useWaterBuddy";
 
 // Types
 export type {

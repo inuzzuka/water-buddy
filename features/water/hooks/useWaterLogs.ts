@@ -1,5 +1,5 @@
 import { useWaterBuddyContext } from "@/context/WaterBuddyContext";
-import { useToday } from "@/db/hooks/useWaterBuddy";
+import { useToday } from "@/db/hooks/useToday";
 import { waterService } from "../services";
 
 export function useWaterLogs() {
@@ -12,7 +12,7 @@ export function useWaterLogs() {
 
     await waterService.deleteDrink(id, user.id);
 
-    refresh();
+    await refresh();
   }
 
   return {

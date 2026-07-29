@@ -1,13 +1,13 @@
-import { BaseRepository } from '../BaseRepository';
-import type { DailyGoal } from '../types';
-import { isoDate, now, offsetDate, yesterday } from '../utils/dateHelpers';
+import { BaseRepository } from "../BaseRepository";
+import type { DailyGoal } from "../types";
+import { isoDate, now, offsetDate, yesterday } from "../utils/dateHelpers";
 
 export class DailyGoalRepository extends BaseRepository<DailyGoal> {
-  protected tableName = 'daily_goals';
+  protected tableName = "daily_goals";
 
   async getToday(userId: number): Promise<DailyGoal | null> {
     return this.findOne({
-      where: { clause: 'user_id = ? AND date = ?', args: [userId, isoDate()] },
+      where: { clause: "user_id = ? AND date = ?", args: [userId, isoDate()] },
     });
   }
 

@@ -1,5 +1,5 @@
 import { useWaterBuddyContext } from "@/context/WaterBuddyContext";
-import { useToday } from "@/db/hooks/useWaterBuddy";
+import { useToday } from "@/db/hooks/useToday";
 import { useMemo } from "react";
 import { GoalService } from "../services/GoalService";
 
