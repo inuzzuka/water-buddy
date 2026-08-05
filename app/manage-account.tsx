@@ -12,7 +12,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ManageAccount() {
-  const { user, db } = useWaterBuddyContext();
+  const { user, updateUser } = useWaterBuddyContext();
   const insets = useSafeAreaInsets();
 
   const [firstName, setFirstName] = useState(user?.first_name ?? "");
@@ -21,19 +21,15 @@ export default function ManageAccount() {
 
   const handleSave = async () => {
     if (!user?.id) return;
-    await db.users.update(user.id, {
+
+    await updateUser({
       first_name: firstName,
       last_name: lastName,
       email,
     });
-    const updatedUser = await db.users.findById(user.id);
 
-    if (updatedUser) {
-      // update local state later
-    }
     router.back();
   };
-
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <AppHeader title="Water Buddy" onBack={() => router.back()} />

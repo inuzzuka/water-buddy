@@ -15,6 +15,8 @@ type WaterBuddyContextType = {
 
   analyticsVersion: number;
   refreshAnalytics: () => void;
+
+  updateUser: (updates: Partial<User>) => Promise<void>;
 };
 
 const WaterBuddyContext = createContext<WaterBuddyContextType | null>(null);
@@ -54,6 +56,18 @@ export function WaterBuddyProvider({
 
   function refreshAnalytics() {
     setAnalyticsVersion((v) => v + 1);
+  }
+
+  async function updateUser(updates: Partial<User>) {
+    if (!user?.id) return;
+
+    await db.users.update(user.id, updates);
+
+    const updatedUser = await db.users.findById(user.id);
+
+    if (updatedUser) {
+      setUser(updatedUser);
+    }
   }
 
   useEffect(() => {
@@ -108,6 +122,8 @@ export function WaterBuddyProvider({
 
         analyticsVersion,
         refreshAnalytics,
+
+        updateUser,
       }}
     >
       {children}
