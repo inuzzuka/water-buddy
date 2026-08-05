@@ -8,12 +8,13 @@ type WaterBuddyContextType = {
   db: ReturnType<typeof useWaterBuddy>["db"];
 
   goal: DailyGoal | null;
-
   consumedMl: number;
-
   logs: WaterLog[];
 
-  refreshWater: () => void;
+  refreshWater: () => Promise<void>;
+
+  analyticsVersion: number;
+  refreshAnalytics: () => void;
 };
 
 const WaterBuddyContext = createContext<WaterBuddyContextType | null>(null);
@@ -33,6 +34,8 @@ export function WaterBuddyProvider({
 
   const [logs, setLogs] = useState<WaterLog[]>([]);
 
+  const [analyticsVersion, setAnalyticsVersion] = useState(0);
+
   const refreshWater = async () => {
     if (!user?.id) return;
 
@@ -48,6 +51,10 @@ export function WaterBuddyProvider({
     setConsumedMl(total);
     setLogs(todayLogs);
   };
+
+  function refreshAnalytics() {
+    setAnalyticsVersion((v) => v + 1);
+  }
 
   useEffect(() => {
     if (!ready) return;
@@ -98,6 +105,9 @@ export function WaterBuddyProvider({
         logs,
 
         refreshWater,
+
+        analyticsVersion,
+        refreshAnalytics,
       }}
     >
       {children}

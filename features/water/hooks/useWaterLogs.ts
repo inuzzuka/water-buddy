@@ -2,7 +2,7 @@ import { useWaterBuddyContext } from "@/context/WaterBuddyContext";
 import { waterService } from "../services";
 
 export function useWaterLogs() {
-  const { user, logs, refreshWater } = useWaterBuddyContext();
+  const { user, logs, refreshWater, refreshAnalytics } = useWaterBuddyContext();
 
   async function deleteLog(id: number) {
     if (!user?.id) return;
@@ -10,6 +10,7 @@ export function useWaterLogs() {
     await waterService.deleteDrink(id, user.id);
 
     await refreshWater();
+    refreshAnalytics();
   }
 
   return {

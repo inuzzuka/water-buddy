@@ -2,7 +2,7 @@ import { useWaterBuddyContext } from "@/context/WaterBuddyContext";
 import { waterService } from "../services";
 
 export function useWater() {
-  const { user, refreshWater } = useWaterBuddyContext();
+  const { user, refreshWater, refreshAnalytics } = useWaterBuddyContext();
 
   async function addDrink(amountMl: number, label = "Water") {
     if (!user?.id) {
@@ -11,7 +11,8 @@ export function useWater() {
 
     const result = await waterService.addDrink(user.id, amountMl, label);
 
-    refreshWater();
+    await refreshWater();
+    refreshAnalytics();
 
     return result;
   }

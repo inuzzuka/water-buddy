@@ -5,7 +5,7 @@ import { waterService } from "../services";
 type Period = "Week" | "Month";
 
 export function useWaterAnalytics() {
-  const { user } = useWaterBuddyContext();
+  const { user, analyticsVersion } = useWaterBuddyContext();
 
   const [period, setPeriod] = useState<Period>("Week");
 
@@ -14,6 +14,8 @@ export function useWaterAnalytics() {
   >([]);
 
   useEffect(() => {
+    console.log("Loading analytics");
+
     async function loadChart() {
       if (!user?.id) return;
 
@@ -22,16 +24,19 @@ export function useWaterAnalytics() {
       const from = new Date();
       from.setDate(from.getDate() - days + 1);
 
-      const fromDate = from.toISOString().split("T")[0];
-      const toDate = new Date().toISOString().split("T")[0];
+      const data = await waterService.getDailyTotals(
+        user.id,
+        from.toISOString().split("T")[0],
+        new Date().toISOString().split("T")[0],
+      );
 
-      const data = await waterService.getDailyTotals(user.id, fromDate, toDate);
+      console.log("Chart data:", data);
 
       setChartData(data);
     }
 
     loadChart();
-  }, [user?.id, period]);
+  }, [user?.id, period, analyticsVersion]);
 
   return {
     chartData,

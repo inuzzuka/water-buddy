@@ -1,5 +1,5 @@
 import { BaseRepository } from "@/db/BaseRepository";
-import type { WaterLog } from "@/db/types";
+import type { DailyWaterTotal, WaterLog } from "@/db/types";
 import { isoDate, now } from "@/db/utils/dateHelpers";
 
 export class WaterLogRepository extends BaseRepository<WaterLog> {
@@ -84,7 +84,7 @@ export class WaterLogRepository extends BaseRepository<WaterLog> {
     userId: number,
     fromDate: string,
     toDate: string,
-  ): Promise<{ date: string; total_ml: number }[]> {
+  ): Promise<DailyWaterTotal[]> {
     const db = await this.db();
 
     return db.getAllAsync<{ date: string; total_ml: number }>(

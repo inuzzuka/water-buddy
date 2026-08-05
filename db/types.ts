@@ -30,6 +30,11 @@ export type DailyGoal = {
   updated_at?: string;
 };
 
+export type DailyWaterTotal = {
+  date: string;
+  total_ml: number;
+};
+
 export type Reminder = {
   id?: number;
   user_id: number;
