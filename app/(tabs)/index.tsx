@@ -24,6 +24,7 @@ export default function Ritual() {
     useRitual();
 
   const [modalVisible, setModalVisible] = useState(false);
+
   const greeting = getGreeting();
   const firstName = user?.first_name ?? "Buddy";
 
@@ -31,17 +32,21 @@ export default function Ritual() {
     <ScreenContent>
       <BuddyMascot
         size={100}
+        mascotPosition="down"
         bubble={`${greeting}, ${firstName}! Time for a refreshing sip?`}
       />
+
       <WaterIntakeDisplay
         consumedMl={consumedMl ?? 0}
         goalMl={goal?.goal_ml ?? 2500}
       />
+
       <QuickAddButtons
         onQuickAdd={() => addWater(defaultQuickAddMl, "Water", false)}
         onOther={() => setModalVisible(true)}
         quickAddLabel={defaultQuickAddMl}
       />
+
       <View
         style={{
           flexDirection: "row",
@@ -55,9 +60,12 @@ export default function Ritual() {
           goalMl={goal?.goal_ml ?? 2500}
           consumedMl={consumedMl ?? 0}
         />
+
         <LastSipCard lastSipAt={logs[0]?.logged_at ?? null} />
       </View>
+
       {/* {tip && <BuddyTipCard content={tip.content} />} */}
+
       <AddWaterModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}

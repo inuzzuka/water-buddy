@@ -7,9 +7,14 @@ import { Polygon, Svg } from "react-native-svg";
 type Props = {
   size?: number;
   bubble?: string;
+  mascotPosition?: "left" | "right" | "up" | "down";
 };
 
-export default function BuddyMascot({ size = 160, bubble }: Props) {
+export default function BuddyMascot({
+  size = 160,
+  bubble,
+  mascotPosition = "down",
+}: Props) {
   const floatAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -29,26 +34,56 @@ export default function BuddyMascot({ size = 160, bubble }: Props) {
     ).start();
   }, []);
 
-  return (
-    <View style={styles.container}>
-      {bubble && (
-        <View style={styles.bubbleWrapper}>
-          <View style={styles.bubble}>
-            <Text style={styles.bubbleText}>{bubble}</Text>
-          </View>
-          <Svg width={20} height={10} style={{ marginTop: -2 }}>
-            <Polygon points="0,0 20,0 10,10" fill={colors.white} />
-          </Svg>
-        </View>
-      )}
+  const mascot = (
+    <Animated.View style={{ transform: [{ translateY: floatAnim }] }}>
+      <Image
+        source={require("@/assets/images/water-buddy.png")}
+        style={{ width: size, height: size }}
+        resizeMode="contain"
+      />
+    </Animated.View>
+  );
 
-      <Animated.View style={{ transform: [{ translateY: floatAnim }] }}>
-        <Image
-          source={require("@/assets/images/water-buddy.png")}
-          style={{ width: size, height: size }}
-          resizeMode="contain"
-        />
-      </Animated.View>
+  const bubbleContent = bubble && (
+    <View style={styles.bubbleWrapper}>
+      <View style={styles.bubble}>
+        <Text style={styles.bubbleText}>{bubble}</Text>
+      </View>
+
+      <Svg
+        width={20}
+        height={10}
+        style={[
+          styles.arrow,
+          mascotPosition === "up" && styles.arrowUp,
+          mascotPosition === "left" && styles.arrowLeft,
+          mascotPosition === "right" && styles.arrowRight,
+        ]}
+      >
+        <Polygon points="0,0 20,0 10,10" fill={colors.white} />
+      </Svg>
+    </View>
+  );
+
+  if (!bubble) {
+    return <View style={styles.container}>{mascot}</View>;
+  }
+
+  return (
+    <View
+      style={[
+        styles.container,
+        (mascotPosition === "left" || mascotPosition === "right") &&
+          styles.horizontal,
+      ]}
+    >
+      {mascotPosition === "left" && mascot}
+      {mascotPosition === "up" && mascot}
+
+      {bubbleContent}
+
+      {mascotPosition === "right" && mascot}
+      {mascotPosition === "down" && mascot}
     </View>
   );
 }
@@ -58,10 +93,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+
+  horizontal: {
+    flexDirection: "row",
+  },
+
   bubbleWrapper: {
     alignItems: "center",
-    marginBottom: 8,
+    justifyContent: "center",
   },
+
   bubble: {
     width: 275,
     maxWidth: 297.5,
@@ -79,6 +120,7 @@ const styles = StyleSheet.create({
     shadowRadius: 24,
     elevation: 6,
   },
+
   bubbleText: {
     fontFamily: fonts.bold,
     fontSize: 16,
@@ -86,5 +128,32 @@ const styles = StyleSheet.create({
     color: colors.primary,
     textAlign: "center",
     width: 193,
+  },
+
+  arrow: {
+    marginTop: -2,
+  },
+
+  // Mascot is ABOVE the bubble
+  arrowUp: {
+    position: "absolute",
+    top: -7,
+    transform: [{ rotate: "180deg" }],
+  },
+
+  // Mascot is LEFT of the bubble
+  arrowLeft: {
+    position: "absolute",
+    left: -7,
+    top: "50%",
+    transform: [{ rotate: "90deg" }],
+  },
+
+  // Mascot is RIGHT of the bubble
+  arrowRight: {
+    position: "absolute",
+    right: -7,
+    top: "50%",
+    transform: [{ rotate: "-90deg" }],
   },
 });

@@ -30,7 +30,7 @@ export function useWaterAnalytics() {
         new Date().toISOString().split("T")[0],
       );
 
-      console.log("Chart data:", data);
+      console.log("Analytics loaded");
 
       setChartData(data);
     }
