@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     gap: 25,
-    marginVertical: 16,
+    marginVertical: 25,
     justifyContent: "center",
   },
   otherButton: {
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     color: colors.tabInactive,
   },
   quickAddButton: {
-    width: 165,
+    width: 150,
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",

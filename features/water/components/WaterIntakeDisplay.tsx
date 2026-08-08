@@ -203,7 +203,7 @@ export default function WaterIntakeDisplay({
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    marginVertical: 16,
+    marginVertical: 25,
   },
   circleOutline: {
     position: "absolute",

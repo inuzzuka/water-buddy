@@ -50,9 +50,10 @@ export default function Ritual() {
       <View
         style={{
           flexDirection: "row",
+          justifyContent: "center",
           gap: 12,
-          paddingHorizontal: 24,
-          marginVertical: 16,
+          paddingHorizontal: 25,
+          marginVertical: 25,
         }}
       >
         <StreakCard
