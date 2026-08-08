@@ -1,16 +1,16 @@
-import { colors } from '@/constants/colors';
-import { typography } from '@/constants/typography';
-import { useEffect, useRef } from 'react';
-import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
-import { Circle, ClipPath, Defs, Path, Svg } from 'react-native-svg';
+import { colors } from "@/constants/colors";
+import { typography } from "@/constants/typography";
+import { useEffect, useRef } from "react";
+import { Animated, Easing, StyleSheet, Text, View } from "react-native";
+import { Circle, ClipPath, Defs, Path, Svg } from "react-native-svg";
 
 const SIZE = 220;
 const RADIUS = SIZE / 2;
 
-const WAVE_LIGHT = 'rgba(147, 210, 255, 0.5)';
-const WAVE_DARK = 'rgba(71, 169, 255, 0.85)';
-const CIRCLE_BG = '#EAF4FB';
-const BUBBLE_COLOR = 'white';
+const WAVE_LIGHT = "rgba(147, 210, 255, 0.5)";
+const WAVE_DARK = "rgba(71, 169, 255, 0.85)";
+const CIRCLE_BG = "#EAF4FB";
+const BUBBLE_COLOR = "white";
 
 function WaveCircle({ fillPercent }: { fillPercent: number }) {
   const waveAnim = useRef(new Animated.Value(0)).current;
@@ -93,9 +93,30 @@ function WaveCircle({ fillPercent }: { fillPercent: number }) {
         />
       )}
 
-      <Circle cx={70} cy={190} r={5} fill={BUBBLE_COLOR} opacity={0.6} clipPath="url(#circleClip)" />
-      <Circle cx={110} cy={196} r={4.5} fill={BUBBLE_COLOR} opacity={0.5} clipPath="url(#circleClip)" />
-      <Circle cx={150} cy={192} r={3} fill={BUBBLE_COLOR} opacity={0.4} clipPath="url(#circleClip)" />
+      <Circle
+        cx={70}
+        cy={190}
+        r={5}
+        fill={BUBBLE_COLOR}
+        opacity={0.6}
+        clipPath="url(#circleClip)"
+      />
+      <Circle
+        cx={110}
+        cy={196}
+        r={4.5}
+        fill={BUBBLE_COLOR}
+        opacity={0.5}
+        clipPath="url(#circleClip)"
+      />
+      <Circle
+        cx={150}
+        cy={192}
+        r={3}
+        fill={BUBBLE_COLOR}
+        opacity={0.4}
+        clipPath="url(#circleClip)"
+      />
     </Svg>
   );
 }
@@ -136,17 +157,26 @@ function AnimatedPath({
 
   function updatePath() {
     const segW = SIZE / 2;
-    const offset = (waveRef.current * segW * 2 + phaseOffset * segW * 2) % (segW * 2);
+    const offset =
+      (waveRef.current * segW * 2 + phaseOffset * segW * 2) % (segW * 2);
     const fillY = SIZE - fillRef.current * SIZE;
     if (pathRef.current) {
       pathRef.current.setNativeProps({ d: wavePath(fillY, offset) });
     }
   }
 
-  return <Path ref={pathRef} d={wavePath(SIZE, 0)} fill={fill} clipPath={clipPath} />;
+  return (
+    <Path ref={pathRef} d={wavePath(SIZE, 0)} fill={fill} clipPath={clipPath} />
+  );
 }
 
-export default function WaterIntakeDisplay({ consumedMl, goalMl }: { consumedMl: number; goalMl: number }) {
+export default function WaterIntakeDisplay({
+  consumedMl,
+  goalMl,
+}: {
+  consumedMl: number;
+  goalMl: number;
+}) {
   const fillPercent = Math.min(consumedMl / goalMl, 1);
   const consumedL = (consumedMl / 1000).toFixed(1);
   const goalL = (goalMl / 1000).toFixed(1);
@@ -172,11 +202,11 @@ export default function WaterIntakeDisplay({ consumedMl, goalMl }: { consumedMl:
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    alignItems: "center",
     marginVertical: 16,
   },
   circleOutline: {
-    position: 'absolute',
+    position: "absolute",
     width: SIZE + 12,
     height: SIZE + 12,
     borderRadius: (SIZE + 12) / 2,
@@ -190,16 +220,16 @@ const styles = StyleSheet.create({
   circleWrapper: {
     width: SIZE,
     height: SIZE,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   textOverlay: {
-    position: 'absolute',
-    alignItems: 'center',
+    position: "absolute",
+    alignItems: "center",
   },
   amountRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
+    flexDirection: "row",
+    alignItems: "flex-end",
   },
   amount: {
     ...typography.h2,
@@ -223,6 +253,6 @@ const styles = StyleSheet.create({
   goalText: {
     fontSize: 14,
     color: colors.primaryDark,
-    fontFamily: 'NunitoSans_400Regular',
+    fontFamily: "NunitoSans_400Regular",
   },
 });

@@ -1,13 +1,13 @@
-import { BaseRepository } from '../BaseRepository';
-import type { DailyGoal } from '../types';
-import { isoDate, now, offsetDate, yesterday } from '../utils/dateHelpers';
+import { BaseRepository } from "../BaseRepository";
+import type { DailyGoal } from "../types";
+import { isoDate, now, offsetDate, yesterday } from "../utils/dateHelpers";
 
 export class DailyGoalRepository extends BaseRepository<DailyGoal> {
-  protected tableName = 'daily_goals';
+  protected tableName = "daily_goals";
 
   async getToday(userId: number): Promise<DailyGoal | null> {
     return this.findOne({
-      where: { clause: 'user_id = ? AND date = ?', args: [userId, isoDate()] },
+      where: { clause: "user_id = ? AND date = ?", args: [userId, isoDate()] },
     });
   }
 
@@ -27,8 +27,8 @@ export class DailyGoalRepository extends BaseRepository<DailyGoal> {
   async setGoal(userId: number, goal_ml: number): Promise<void> {
     const db = await this.db();
     await db.runAsync(
-      `INSERT INTO daily_goals (user_id, date, goal_ml, consumed_ml, streak_days, completed)
-       VALUES (?, ?, ?, 0, 0, 0)
+      `INSERT INTO daily_goals (user_id, date, goal_ml, streak_days, completed)
+       VALUES (?, ?, ?, 0, 0)
        ON CONFLICT(user_id, date) DO UPDATE SET
         goal_ml = ?,
         updated_at = ?`,
@@ -66,8 +66,8 @@ export class DailyGoalRepository extends BaseRepository<DailyGoal> {
     }
 
     await db.runAsync(
-      `INSERT INTO daily_goals (user_id, date, goal_ml, consumed_ml, streak_days, completed)
-       VALUES (?, ?, 2500, 0, ?, 0)
+      `INSERT INTO daily_goals (user_id, date, goal_ml, streak_days, completed)
+       VALUES (?, ?, 2500, ?, 0)
        ON CONFLICT(user_id, date) DO UPDATE SET streak_days = ?, updated_at = ?`,
       userId,
       isoDate(),

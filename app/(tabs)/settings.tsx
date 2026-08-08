@@ -1,103 +1,64 @@
-import ScreenContent from '@/components/layout/ScreenContent';
-import BuddyProfile from '@/components/settings/BuddyProfile';
-import DailyGoalSlider from '@/components/settings/DailyGoalSlider';
-import FeedbackSection from '@/components/settings/FeedbackSection';
-import QuietHoursSection from '@/components/settings/QuietHoursSection';
-import RemindersSection from '@/components/settings/RemindersSection';
-import { useWaterBuddyContext } from '@/context/WaterBuddyContext';
-import { updateReminderNotifications } from '@/services/notificationService';
-import { router } from 'expo-router';
-import { useEffect } from 'react';
+import ScreenContent from "@/components/layout/ScreenContent";
+import BuddyProfile from "@/components/settings/BuddyProfile";
+import DailyGoalSlider from "@/components/settings/DailyGoalSlider";
+import FeedbackSection from "@/components/settings/FeedbackSection";
+import QuietHoursSection from "@/components/settings/QuietHoursSection";
+import RemindersSection from "@/components/settings/RemindersSection";
+import { useWaterBuddyContext } from "@/context/WaterBuddyContext";
+import { useGoal } from "@/features/goals/hooks/useGoal";
+import { useSettings } from "@/features/settings/hooks/useSettings";
+import { router } from "expo-router";
 
 export default function Settings() {
-  const { user, db, goal, reminderSettings, quietHours, appSettings, refreshSettings } = useWaterBuddyContext();
+  const { user } = useWaterBuddyContext();
+
+  const {
+    reminderSettings,
+    quietHours,
+    appSettings,
+    saveReminder,
+    saveQuietHours,
+    saveSound,
+  } = useSettings();
+
+  const { goal, updateGoal } = useGoal();
 
   const handleGoalChange = async (ml: number) => {
-    if (!user?.id) return;
-
-    await db.dailyGoals.setGoal(user.id, ml);
-    await refreshSettings();
-  };
-
-  const refreshNotifications = async () => {
-    if (!user?.id) return;
-
-    const reminders = await db.reminders.getForUser(user.id);
-    const settings = await db.settings.getForUser(user.id);
-    if (!reminders) return;
-    await updateReminderNotifications({
-      enabled: reminders.enabled === 1,
-      frequencyMinutes: reminders.frequency_minutes,
-      quietHours: {
-        enabled: reminders.quiet_hours_enabled === 1,
-        start: reminders.quiet_start,
-        end: reminders.quiet_end,
-      },
-      sound: settings?.sound !== 0,
-    });
-  };
-
-  const handleSaveReminder = async (enabled: boolean, frequencyMinutes: number) => {
-    if (!user?.id) return;
-
-    await db.reminders.saveForUser(user.id, {
-      enabled: enabled ? 1 : 0,
-      frequency_minutes: frequencyMinutes,
-    });
-
-    await refreshSettings();
-    await refreshNotifications();
-  };
-
-  const handleSaveQuietHours = async (enabled: boolean, start: string, end: string) => {
-    if (!user?.id) return;
-
-    await db.reminders.saveForUser(user.id, {
-      quiet_hours_enabled: enabled ? 1 : 0,
-      quiet_start: start,
-      quiet_end: end,
-    });
-
-    await refreshSettings();
-    await refreshNotifications();
+    await updateGoal(ml);
   };
 
   const handleSaveFeedback = async (sound: boolean) => {
-    if (!user?.id) return;
-
-    await db.settings.saveForUser(user.id, {
-      sound: sound ? 1 : 0,
-    });
-
-    await refreshSettings();
-    await refreshNotifications();
+    await saveSound(sound);
   };
-
-  useEffect(() => {
-    if (!user?.id) return;
-
-    refreshSettings();
-  }, [user?.id, refreshSettings]);
 
   return (
     <ScreenContent>
-      {user && <BuddyProfile user={user} onManageAccount={() => router.push('/manage-account')} />}
+      {user && (
+        <BuddyProfile
+          user={user}
+          onManageAccount={() => router.push("/manage-account")}
+        />
+      )}
 
-      <DailyGoalSlider goalMl={goal?.goal_ml ?? 2500} onGoalChange={handleGoalChange} />
+      <DailyGoalSlider
+        goalMl={goal?.goal_ml ?? 2500}
+        onGoalChange={handleGoalChange}
+      />
 
       <RemindersSection
-        onSave={handleSaveReminder}
+        onSave={saveReminder}
         initialEnabled={reminderSettings?.enabled ?? false}
         initialFrequency={reminderSettings?.frequency ?? 60}
       />
 
       <QuietHoursSection
         initialEnabled={quietHours?.enabled ?? false}
-        initialStart={quietHours?.start ?? '22:00'}
-        initialEnd={quietHours?.end ?? '07:00'}
-        onSave={handleSaveQuietHours}
+        initialStart={quietHours?.start ?? "22:00"}
+        initialEnd={quietHours?.end ?? "07:00"}
+        onSave={saveQuietHours}
       />
-      <FeedbackSection onSave={handleSaveFeedback} initialSound={appSettings?.sound} />
+
+      <FeedbackSection onSave={saveSound} initialSound={appSettings?.sound} />
     </ScreenContent>
   );
 }

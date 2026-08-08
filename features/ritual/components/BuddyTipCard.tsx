@@ -1,7 +1,7 @@
-import LightbulbIcon from '@/assets/icons/lightbulb.svg';
-import { colors } from '@/constants/colors';
-import { fonts } from '@/constants/typography';
-import { StyleSheet, Text, View } from 'react-native';
+import LightbulbIcon from "@/assets/icons/lightbulb.svg";
+import { colors } from "@/constants/colors";
+import { fonts } from "@/constants/typography";
+import { StyleSheet, Text, View } from "react-native";
 
 type Props = {
   content: string;
@@ -32,12 +32,12 @@ const styles = StyleSheet.create({
   outer: {
     paddingHorizontal: 25,
     paddingVertical: 10,
-    alignSelf: 'stretch',
+    alignSelf: "stretch",
   },
   card: {
-    backgroundColor: 'rgba(71, 169, 255, 0.1)',
+    backgroundColor: "rgba(71, 169, 255, 0.1)",
     borderWidth: 1,
-    borderColor: 'rgba(71, 169, 255, 0.2)',
+    borderColor: "rgba(71, 169, 255, 0.2)",
     borderRadius: 48,
     padding: 40,
     shadowColor: colors.primary,
@@ -47,8 +47,8 @@ const styles = StyleSheet.create({
     // remove elevation: 4
   },
   inner: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
     gap: 24,
   },
   iconCircle: {
@@ -57,11 +57,11 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
     backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: 'rgba(71, 169, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderColor: "rgba(71, 169, 255, 0.1)",
+    justifyContent: "center",
+    alignItems: "center",
     flexShrink: 0,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   },
   quote: {
     fontFamily: fonts.regular,
-    fontStyle: 'italic',
+    fontStyle: "italic",
     fontSize: 16,
     lineHeight: 26,
     color: colors.tabInactive,

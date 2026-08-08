@@ -24,11 +24,15 @@ export type DailyGoal = {
   user_id: number;
   date: string; // ISO date 'YYYY-MM-DD'
   goal_ml: number;
-  consumed_ml: number;
   streak_days: number;
   completed: 0 | 1;
   created_at?: string;
   updated_at?: string;
+};
+
+export type DailyWaterTotal = {
+  date: string;
+  total_ml: number;
 };
 
 export type Reminder = {

@@ -1,11 +1,20 @@
-import TrashIcon from '@/assets/icons/trash.svg';
-import Icon from '@/assets/icons/water-glass.svg';
-import { colors } from '@/constants/colors';
-import { fonts } from '@/constants/typography';
-import { WaterLog } from '@/db/types';
-import { useRef, useState } from 'react';
-import { Animated, LayoutAnimation, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import IconButton from '../ui/IconButton';
+import TrashIcon from "@/assets/icons/trash.svg";
+import Icon from "@/assets/icons/water-glass.svg";
+import { colors } from "@/constants/colors";
+import { fonts } from "@/constants/typography";
+import { WaterLog } from "@/db/types";
+import { useRef, useState } from "react";
+import {
+  Animated,
+  LayoutAnimation,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import IconButton from "../ui/IconButton";
 
 type Props = {
   logs: WaterLog[];
@@ -14,7 +23,7 @@ type Props = {
 
 function formatTime(logged_at: string): string {
   const d = new Date(logged_at);
-  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 function LogEntry({
@@ -45,14 +54,24 @@ function LogEntry({
     <Animated.View
       style={{
         opacity: anim,
-        transform: [{ scale: anim.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1] }) }],
-      }}>
+        transform: [
+          {
+            scale: anim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0.85, 1],
+            }),
+          },
+        ],
+      }}
+    >
       <View style={styles.entry}>
         <View style={styles.left}>
           <IconButton icon={Icon} background />
           <View style={styles.textBlock}>
             <Text style={styles.logLabel}>{log.label}</Text>
-            <Text style={styles.logTime}>{formatTime(log.logged_at ?? '')}</Text>
+            <Text style={styles.logTime}>
+              {formatTime(log.logged_at ?? "")}
+            </Text>
           </View>
         </View>
 
@@ -96,12 +115,23 @@ export default function TodayLogs({ logs, onDelete }: Props) {
         <LogEntry key={log.id} log={log} />
       ))}
 
-      <Modal visible={modalVisible} transparent animationType="slide" onRequestClose={() => setModalVisible(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setModalVisible(false)} />
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <Pressable
+          style={styles.backdrop}
+          onPress={() => setModalVisible(false)}
+        />
         <View style={styles.sheet}>
           <View style={styles.handle} />
           <Text style={styles.sheetTitle}>Today's logs</Text>
-          <ScrollView contentContainerStyle={styles.sheetContent} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            contentContainerStyle={styles.sheetContent}
+            showsVerticalScrollIndicator={false}
+          >
             {logs.map((log) => (
               <LogEntry key={log.id} log={log} showDelete onDelete={onDelete} />
             ))}
@@ -119,9 +149,9 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 15,
   },
   title: {
@@ -135,16 +165,16 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   entry: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 25,
     backgroundColor: colors.white,
     borderRadius: 32,
   },
   left: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 15,
     flex: 1,
     marginRight: 12,
@@ -167,12 +197,12 @@ const styles = StyleSheet.create({
     fontFamily: fonts.jakarta,
     fontSize: 16,
     color: colors.primary,
-    textAlign: 'right',
+    textAlign: "right",
     width: 70,
   },
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: "rgba(0,0,0,0.3)",
   },
   sheet: {
     backgroundColor: colors.lightGray,
@@ -180,14 +210,14 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 28,
     padding: 24,
     paddingBottom: 40,
-    maxHeight: '80%',
+    maxHeight: "80%",
   },
   handle: {
     width: 40,
     height: 4,
     borderRadius: 2,
     backgroundColor: colors.headerBorder,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: 16,
   },
   sheetTitle: {
@@ -201,8 +231,8 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   right: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
 });

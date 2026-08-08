@@ -1,12 +1,19 @@
-import LabelIcon from '@/assets/icons/journal.svg';
-import AmountIcon from '@/assets/icons/water-glass.svg';
-import { colors } from '@/constants/colors';
-import { fonts, typography } from '@/constants/typography';
-import { useState } from 'react';
-import { Keyboard, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import LabelIcon from "@/assets/icons/journal.svg";
+import AmountIcon from "@/assets/icons/water-glass.svg";
+import { colors } from "@/constants/colors";
+import { fonts, typography } from "@/constants/typography";
+import { useState } from "react";
+import {
+  Keyboard,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
-import Button from '../../components/ui/Button';
-import FormInput from '../../components/ui/FormInput';
+import Button from "../../../components/ui/Button";
+import FormInput from "../../../components/ui/FormInput";
 
 type Props = {
   visible: boolean;
@@ -17,30 +24,35 @@ type Props = {
 export function getDefaultWaterLabel() {
   const hour = new Date().getHours();
 
-  if (hour >= 6 && hour < 12) return 'Morning Boost';
-  if (hour >= 12 && hour < 18) return 'Afternoon Recharge';
-  if (hour >= 18 && hour < 24) return 'Evening Refresh';
+  if (hour >= 6 && hour < 12) return "Morning Boost";
+  if (hour >= 12 && hour < 18) return "Afternoon Recharge";
+  if (hour >= 18 && hour < 24) return "Evening Refresh";
 
-  return 'Midnight Refill';
+  return "Midnight Refill";
 }
 
 export default function AddWaterModal({ visible, onClose, onConfirm }: Props) {
-  const [amount, setAmount] = useState('');
-  const [label, setLabel] = useState('');
+  const [amount, setAmount] = useState("");
+  const [label, setLabel] = useState("");
   const [isDefault, setIsDefault] = useState(false);
 
   const handleConfirm = () => {
     const ml = parseInt(amount);
     if (!ml || ml <= 0) return;
     onConfirm(ml, label.trim() || getDefaultWaterLabel(), isDefault);
-    setAmount('');
-    setLabel('');
+    setAmount("");
+    setLabel("");
     setIsDefault(false);
     onClose();
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
       <Pressable style={styles.overlay} onPress={Keyboard.dismiss}>
         <Pressable style={styles.backdrop} onPress={onClose} />
         <View style={styles.sheet}>
@@ -66,11 +78,18 @@ export default function AddWaterModal({ visible, onClose, onConfirm }: Props) {
             returnKeyType="done"
             onSubmitEditing={handleConfirm}
           />
-          <Pressable style={styles.checkboxRow} onPress={() => setIsDefault((v) => !v)}>
-            <View style={[styles.checkbox, isDefault && styles.checkboxChecked]}>
+          <Pressable
+            style={styles.checkboxRow}
+            onPress={() => setIsDefault((v) => !v)}
+          >
+            <View
+              style={[styles.checkbox, isDefault && styles.checkboxChecked]}
+            >
               {isDefault && <Text style={styles.checkmark}>✓</Text>}
             </View>
-            <Text style={styles.checkboxLabel}>Set as default quick-add amount</Text>
+            <Text style={styles.checkboxLabel}>
+              Set as default quick-add amount
+            </Text>
           </Pressable>
 
           <Button label="Add" onPress={handleConfirm} disabled={!amount} />
@@ -83,11 +102,11 @@ export default function AddWaterModal({ visible, onClose, onConfirm }: Props) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: "rgba(0,0,0,0.3)",
   },
   sheet: {
     backgroundColor: colors.white,
@@ -102,7 +121,7 @@ const styles = StyleSheet.create({
     height: 4,
     borderRadius: 2,
     backgroundColor: colors.headerBorder,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: 16,
   },
   title: {
@@ -112,8 +131,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   checkboxRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
     marginTop: 4,
   },
@@ -123,8 +142,8 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 1.5,
     borderColor: colors.headerBorder,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: colors.background,
   },
   checkboxChecked: {

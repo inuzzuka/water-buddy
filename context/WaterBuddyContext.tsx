@@ -1,192 +1,131 @@
-import { useToday, useWaterBuddy, WaterBuddyDB } from '@/db/hooks/useWaterBuddy';
-import { BuddyTipRepository } from '@/db/repositories/BuddyTipRepository';
-import { UserRepository } from '@/db/repositories/UserRepository';
-import { BuddyTip, DailyGoal, User, WaterLog } from '@/db/types';
-import { restoreReminderNotifications } from '@/services/notificationService';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { useWaterBuddy } from "@/db/hooks/useWaterBuddy";
+import { DailyGoal, User, WaterLog } from "@/db/types";
+import { createContext, useContext, useEffect, useState } from "react";
 
 type WaterBuddyContextType = {
   ready: boolean;
   user: User | null;
+  db: ReturnType<typeof useWaterBuddy>["db"];
+
   goal: DailyGoal | null;
+  consumedMl: number;
   logs: WaterLog[];
-  remaining: number | null;
-  tip: BuddyTip | null;
-  db: WaterBuddyDB;
-  reminderSettings: ReminderSettings | null;
-  quietHours: QuietHoursSettings | null;
-  defaultQuickAddMl: number;
-  appSettings: AppSettings | null;
-  setDefaultQuickAddMl: (ml: number) => void | Promise<void>;
-  logDrink: (amount_ml: number, label?: string) => Promise<void>;
-  refreshSettings: () => Promise<void>;
-  deleteLog: (id: number) => Promise<void>;
-};
 
-type ReminderSettings = {
-  enabled: boolean;
-  frequency: number;
-};
+  refreshWater: () => Promise<void>;
 
-type QuietHoursSettings = {
-  enabled: boolean;
-  start: string;
-  end: string;
-};
+  analyticsVersion: number;
+  refreshAnalytics: () => void;
 
-type AppSettings = {
-  sound: boolean;
+  updateUser: (updates: Partial<User>) => Promise<void>;
 };
 
 const WaterBuddyContext = createContext<WaterBuddyContextType | null>(null);
 
-export function WaterBuddyProvider({ children }: { children: React.ReactNode }) {
+export function WaterBuddyProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { ready, db } = useWaterBuddy();
+
   const [user, setUser] = useState<User | null>(null);
-  const [tip, setTip] = useState<BuddyTip | null>(null);
-  const [defaultQuickAddMl, setDefaultQuickAddMlState] = useState(400);
-  const [reminderSettings, setReminderSettings] = useState<ReminderSettings | null>(null);
-  const [quietHours, setQuietHours] = useState<QuietHoursSettings | null>(null);
-  const [appSettings, setAppSettings] = useState<AppSettings>({
-    sound: true,
-  });
 
-  useEffect(() => {
-    if (!ready) return;
-    (async () => {
-      const userRepo = new UserRepository();
-      let foundUser = await userRepo.findById(1);
-      if (!foundUser) {
-        const id = await userRepo.insert({
-          first_name: 'Buddy',
-          last_name: '',
-          email: 'local@waterbuddy.app',
-          password: '',
-          level: 1,
-          xp: 0,
-        });
-        foundUser = await userRepo.findById(id);
-      }
-      if (foundUser?.id) {
-        setUser(foundUser);
-        await db.dailyGoals.recalculateStreak(foundUser.id);
-        const buddyTipRepo = new BuddyTipRepository();
-        await buddyTipRepo.seedDefaultTips(foundUser.id);
-        const nextTip = await buddyTipRepo.getNextTip(foundUser.id);
-        setTip(nextTip);
-        const settings = await db.settings.getForUser(foundUser.id);
-        if (settings?.default_quick_add_ml) {
-          setDefaultQuickAddMlState(settings.default_quick_add_ml);
-        }
-        const reminders = await db.reminders.getForUser(foundUser.id);
+  const [goal, setGoal] = useState<DailyGoal | null>(null);
 
-        if (!reminders) return;
+  const [consumedMl, setConsumedMl] = useState(0);
 
-        setReminderSettings({
-          enabled: reminders.enabled === 1,
-          frequency: reminders.frequency_minutes,
-        });
+  const [logs, setLogs] = useState<WaterLog[]>([]);
 
-        setQuietHours({
-          enabled: reminders.quiet_hours_enabled === 1,
-          start: reminders.quiet_start,
-          end: reminders.quiet_end,
-        });
+  const [analyticsVersion, setAnalyticsVersion] = useState(0);
 
-        // restore notifications if missing
-        await restoreReminderNotifications({
-          enabled: reminders.enabled === 1,
-          frequencyMinutes: reminders.frequency_minutes,
-          quietHours: {
-            enabled: reminders.quiet_hours_enabled === 1,
-            start: reminders.quiet_start,
-            end: reminders.quiet_end,
-          },
-          sound: settings?.sound !== 0,
-        });
-        await refreshSettings();
-      }
-    })();
-  }, [ready]);
-
-  const { goal, logs, remaining, refresh } = useToday(user?.id ?? 0);
-
-  const refreshSettings = async () => {
+  const refreshWater = async () => {
     if (!user?.id) return;
+
+    const userId = user.id;
+
+    const [todayGoal, todayLogs, total] = await Promise.all([
+      db.dailyGoals.getToday(userId),
+      db.waterLogs.getTodayLogs(userId),
+      db.waterLogs.getTodayTotal(userId),
+    ]);
+
+    setGoal(todayGoal);
+    setConsumedMl(total);
+    setLogs(todayLogs);
+  };
+
+  function refreshAnalytics() {
+    setAnalyticsVersion((v) => v + 1);
+  }
+
+  async function updateUser(updates: Partial<User>) {
+    if (!user?.id) return;
+
+    await db.users.update(user.id, updates);
 
     const updatedUser = await db.users.findById(user.id);
 
     if (updatedUser) {
       setUser(updatedUser);
     }
+  }
 
-    const reminders = await db.reminders.getForUser(user.id);
+  useEffect(() => {
+    if (!ready) return;
 
-    if (!reminders) return;
+    async function initUser() {
+      let foundUser = await db.users.findById(1);
 
-    setReminderSettings({
-      enabled: reminders.enabled === 1,
-      frequency: reminders.frequency_minutes,
-    });
+      if (!foundUser) {
+        const id = await db.users.insert({
+          first_name: "Buddy",
+          last_name: "",
+          email: "local@waterbuddy.app",
+          password: "",
+          level: 1,
+          xp: 0,
+        });
 
-    setQuietHours({
-      enabled: reminders.quiet_hours_enabled === 1,
-      start: reminders.quiet_start,
-      end: reminders.quiet_end,
-    });
+        foundUser = await db.users.findById(id);
+      }
 
-    const settings = await db.settings.getForUser(user.id);
-    setAppSettings({
-      sound: settings?.sound !== 0,
-    });
+      if (foundUser) {
+        setUser(foundUser);
 
-    refresh();
-  };
+        if (!foundUser.id) return;
 
-  const logDrink = async (amount_ml: number, label = 'Water') => {
-    if (!user?.id) return;
-    const result = await db.waterLogs.logDrink(user.id, amount_ml, label);
-    if (result.newTotal >= (goal?.goal_ml ?? 2500)) {
-      await db.dailyGoals.recalculateStreak(user.id);
+        await db.dailyGoals.recalculateStreak(foundUser.id);
+      }
     }
-    refresh();
-  };
 
-  const setDefaultQuickAddMl = async (ml: number) => {
-    setDefaultQuickAddMlState(ml);
+    initUser().catch(console.error);
+  }, [ready, db]);
 
-    if (!user?.id) return;
+  useEffect(() => {
+    if (!ready || !user?.id) return;
 
-    await db.settings.saveForUser(user.id, {
-      default_quick_add_ml: ml,
-    });
-  };
-
-  const deleteLog = async (id: number) => {
-    if (!user?.id) return;
-    await db.waterLogs.deleteLog(id, user.id);
-    refresh();
-  };
+    refreshWater().catch(console.error);
+  }, [ready, user?.id]);
 
   return (
     <WaterBuddyContext.Provider
       value={{
-        ready: ready && user !== null,
+        ready,
         user,
-        goal,
-        logs,
-        remaining,
-        tip,
         db,
-        defaultQuickAddMl,
-        reminderSettings,
-        quietHours,
-        appSettings,
-        setDefaultQuickAddMl,
-        logDrink,
-        deleteLog,
-        refreshSettings,
-      }}>
+
+        goal,
+        consumedMl,
+        logs,
+
+        refreshWater,
+
+        analyticsVersion,
+        refreshAnalytics,
+
+        updateUser,
+      }}
+    >
       {children}
     </WaterBuddyContext.Provider>
   );
@@ -194,6 +133,12 @@ export function WaterBuddyProvider({ children }: { children: React.ReactNode }) 
 
 export function useWaterBuddyContext() {
   const ctx = useContext(WaterBuddyContext);
-  if (!ctx) throw new Error('useWaterBuddyContext must be used inside WaterBuddyProvider');
+
+  if (!ctx) {
+    throw new Error(
+      "useWaterBuddyContext must be used inside WaterBuddyProvider",
+    );
+  }
+
   return ctx;
 }

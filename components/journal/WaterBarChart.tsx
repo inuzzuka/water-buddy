@@ -1,7 +1,9 @@
-import { colors } from '@/constants/colors';
-import { fonts } from '@/constants/typography';
-import { StyleSheet, Text, View } from 'react-native';
-import SegmentedControl from '../ui/SegmentedControl';
+import { colors } from "@/constants/colors";
+import { fonts } from "@/constants/typography";
+import { StyleSheet, Text, View } from "react-native";
+import SegmentedControl from "../ui/SegmentedControl";
+
+type Period = "Week" | "Month";
 
 type DayData = {
   date: string;
@@ -11,10 +13,11 @@ type DayData = {
 type Props = {
   data: DayData[] | undefined;
   goalMl: number;
-  period: string;
-  onPeriodChange: (p: string) => void;
+  period: Period;
+  onPeriodChange: (p: Period) => void;
 };
-const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const MAX_BAR_HEIGHT = 120;
 
 function getDayIndex(date: string): number {
@@ -30,7 +33,7 @@ function getWeekDays(): string[] {
   return Array.from({ length: 7 }, (_, i) => {
     const d = new Date(monday);
     d.setDate(monday.getDate() + i);
-    return d.toISOString().split('T')[0];
+    return d.toISOString().split("T")[0];
   });
 }
 
@@ -42,26 +45,39 @@ function getLastWeekDays(): string[] {
   return Array.from({ length: 7 }, (_, i) => {
     const d = new Date(thisMonday);
     d.setDate(thisMonday.getDate() - 7 + i);
-    return d.toISOString().split('T')[0];
+    return d.toISOString().split("T")[0];
   });
 }
 
-export default function WaterBarChart({ data = [], goalMl, period, onPeriodChange }: Props) {
-  const today = new Date().toISOString().split('T')[0];
+export default function WaterBarChart({
+  data = [],
+  goalMl,
+  period,
+  onPeriodChange,
+}: Props) {
+  const today = new Date().toISOString().split("T")[0];
   const weekDays = getWeekDays();
   const lastWeekDays = getLastWeekDays();
   const dataMap = Object.fromEntries(data.map((d) => [d.date, d.total_ml]));
 
-  const avgMl = data.length > 0 ? Math.round(data.reduce((sum, d) => sum + d.total_ml, 0) / data.length) : 0;
+  const avgMl =
+    data.length > 0
+      ? Math.round(data.reduce((sum, d) => sum + d.total_ml, 0) / data.length)
+      : 0;
 
-  if (period === 'Month') {
+  if (period === "Month") {
     // Get first Monday of the current month
     const todayDate = new Date(today);
     const firstDay = new Date(todayDate.getFullYear(), todayDate.getMonth(), 1);
     const firstMonday = new Date(firstDay);
     const firstDayOfWeek = firstDay.getDay();
     firstMonday.setDate(
-      firstDay.getDate() + (firstDayOfWeek === 0 ? 1 : firstDayOfWeek === 1 ? 0 : 8 - firstDayOfWeek),
+      firstDay.getDate() +
+        (firstDayOfWeek === 0
+          ? 1
+          : firstDayOfWeek === 1
+            ? 0
+            : 8 - firstDayOfWeek),
     );
 
     // Build weeks from first Monday of month
@@ -72,9 +88,9 @@ export default function WaterBarChart({ data = [], goalMl, period, onPeriodChang
       weekEnd.setDate(weekStart.getDate() + 6);
       return {
         label: `Wk ${i + 1}`,
-        start: weekStart.toISOString().split('T')[0],
-        end: weekEnd.toISOString().split('T')[0],
-        isFuture: weekStart.toISOString().split('T')[0] > today,
+        start: weekStart.toISOString().split("T")[0],
+        end: weekEnd.toISOString().split("T")[0],
+        isFuture: weekStart.toISOString().split("T")[0] > today,
         isCurrent: weekStart <= todayDate && todayDate <= weekEnd,
       };
     });
@@ -85,7 +101,9 @@ export default function WaterBarChart({ data = [], goalMl, period, onPeriodChang
     // });
 
     const weekTotals = weekGroups.map(({ start, end }) =>
-      data.filter((d) => d.date >= start && d.date <= end).reduce((sum, d) => sum + d.total_ml, 0),
+      data
+        .filter((d) => d.date >= start && d.date <= end)
+        .reduce((sum, d) => sum + d.total_ml, 0),
     );
 
     const maxMl = Math.max(...weekTotals, 1);
@@ -98,12 +116,19 @@ export default function WaterBarChart({ data = [], goalMl, period, onPeriodChang
             <Text style={styles.avgLabel}>Average Intake</Text>
             <Text style={styles.avgValue}>{avgMl.toLocaleString()} ml/day</Text>
           </View>
-          <SegmentedControl options={['Week', 'Month']} selected={period} onChange={onPeriodChange} />
+          <SegmentedControl
+            options={["Week", "Month"]}
+            selected={period}
+            onChange={onPeriodChange}
+          />
         </View>
         <View style={styles.barsRow}>
           {weekGroups.map((week, i) => {
             const ml = weekTotals[i];
-            const barHeight = Math.max((ml / maxMl) * MAX_BAR_HEIGHT, ml > 0 ? 8 : 0);
+            const barHeight = Math.max(
+              (ml / maxMl) * MAX_BAR_HEIGHT,
+              ml > 0 ? 8 : 0,
+            );
             const isCurrentWeek = i === currentWeekIndex;
             return (
               <View key={week.start} style={styles.barColumn}>
@@ -116,7 +141,9 @@ export default function WaterBarChart({ data = [], goalMl, period, onPeriodChang
                         styles.barThisWeek,
                         {
                           height: barHeight,
-                          backgroundColor: isCurrentWeek ? colors.primary : colors.primaryLight,
+                          backgroundColor: isCurrentWeek
+                            ? colors.primary
+                            : colors.primaryLight,
                           opacity: week.isFuture ? 0.3 : 1,
                         },
                       ]}
@@ -124,7 +151,14 @@ export default function WaterBarChart({ data = [], goalMl, period, onPeriodChang
                   )}
                   {ml === 0 && <View style={styles.barEmpty} />}
                 </View>
-                <Text style={[styles.dayLabel, isCurrentWeek && styles.dayLabelActive]}>{week.label}</Text>
+                <Text
+                  style={[
+                    styles.dayLabel,
+                    isCurrentWeek && styles.dayLabelActive,
+                  ]}
+                >
+                  {week.label}
+                </Text>
               </View>
             );
           })}
@@ -143,7 +177,11 @@ export default function WaterBarChart({ data = [], goalMl, period, onPeriodChang
           <Text style={styles.avgLabel}>Average Intake</Text>
           <Text style={styles.avgValue}>{avgMl.toLocaleString()} ml/day</Text>
         </View>
-        <SegmentedControl options={['Week', 'Month']} selected={period} onChange={onPeriodChange} />
+        <SegmentedControl
+          options={["Week", "Month"]}
+          selected={period}
+          onChange={onPeriodChange}
+        />
       </View>
       <View style={styles.barsRow}>
         {weekDays.map((thisWeekDate, i) => {
@@ -151,18 +189,41 @@ export default function WaterBarChart({ data = [], goalMl, period, onPeriodChang
           const thisWeekMl = dataMap[thisWeekDate] ?? 0;
           const lastWeekMl = dataMap[lastWeekDate] ?? 0;
           const isToday = thisWeekDate === today;
-          const thisWeekHeight = Math.max((thisWeekMl / maxMl) * MAX_BAR_HEIGHT, thisWeekMl > 0 ? 8 : 0);
-          const lastWeekHeight = Math.max((lastWeekMl / maxMl) * MAX_BAR_HEIGHT, lastWeekMl > 0 ? 8 : 0);
+          const thisWeekHeight = Math.max(
+            (thisWeekMl / maxMl) * MAX_BAR_HEIGHT,
+            thisWeekMl > 0 ? 8 : 0,
+          );
+          const lastWeekHeight = Math.max(
+            (lastWeekMl / maxMl) * MAX_BAR_HEIGHT,
+            lastWeekMl > 0 ? 8 : 0,
+          );
           const thisWeekColor = isToday ? colors.primary : colors.primaryLight;
 
           return (
             <View key={thisWeekDate} style={styles.barColumn}>
               <View style={styles.barTrack}>
-                {thisWeekMl === 0 && lastWeekMl === 0 && <View style={styles.barEmpty} />}
-                {lastWeekMl > 0 && <View style={[styles.bar, styles.barLastWeek, { height: lastWeekHeight }]} />}
+                {thisWeekMl === 0 && lastWeekMl === 0 && (
+                  <View style={styles.barEmpty} />
+                )}
+                {lastWeekMl > 0 && (
+                  <View
+                    style={[
+                      styles.bar,
+                      styles.barLastWeek,
+                      { height: lastWeekHeight },
+                    ]}
+                  />
+                )}
                 {thisWeekMl > 0 && (
                   <View
-                    style={[styles.bar, styles.barThisWeek, { height: thisWeekHeight, backgroundColor: thisWeekColor }]}
+                    style={[
+                      styles.bar,
+                      styles.barThisWeek,
+                      {
+                        height: thisWeekHeight,
+                        backgroundColor: thisWeekColor,
+                      },
+                    ]}
                   />
                 )}
               </View>
@@ -191,9 +252,9 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 20,
   },
   avgLabel: {
@@ -208,25 +269,25 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   barsRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
     height: MAX_BAR_HEIGHT + 32,
   },
   barColumn: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
     gap: 8,
   },
   barTrack: {
     height: MAX_BAR_HEIGHT,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    position: 'relative',
+    justifyContent: "flex-end",
+    alignItems: "center",
+    position: "relative",
     width: 36,
   },
   bar: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     borderRadius: 9999,
   },
@@ -239,7 +300,7 @@ const styles = StyleSheet.create({
     width: 35,
   },
   barEmpty: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     width: 35,
     height: 10,

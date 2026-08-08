@@ -1,8 +1,8 @@
-import EditIcon from '@/assets/icons/edit.svg';
-import { colors } from '@/constants/colors';
-import { fonts } from '@/constants/typography';
-import { User } from '@/db/types';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import EditIcon from "@/assets/icons/edit.svg";
+import { colors } from "@/constants/colors";
+import { fonts } from "@/constants/typography";
+import { User } from "@/db/types";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type Props = {
   user: User;
@@ -10,13 +10,13 @@ type Props = {
 };
 
 const LEVEL_TITLES: Record<number, string> = {
-  1: 'Hydration Rookie',
-  2: 'Water Wanderer',
-  3: 'Sip Starter',
-  5: 'Flow Explorer',
-  8: 'Hydration Hero',
-  12: 'Aqua Champion',
-  20: 'Water Wizard',
+  1: "Hydration Rookie",
+  2: "Water Wanderer",
+  3: "Sip Starter",
+  5: "Flow Explorer",
+  8: "Hydration Hero",
+  12: "Aqua Champion",
+  20: "Water Wizard",
 };
 
 function getLevelTitle(level: number): string {
@@ -24,14 +24,18 @@ function getLevelTitle(level: number): string {
     .map(Number)
     .sort((a, b) => b - a);
   const match = keys.find((k) => level >= k);
-  return match ? LEVEL_TITLES[match] : 'Hydration Rookie';
+  return match ? LEVEL_TITLES[match] : "Hydration Rookie";
 }
 
 export default function BuddyProfile({ user, onManageAccount }: Props) {
   return (
     <View style={styles.card}>
       {/* Watermark mascot */}
-      <Image source={require('@/assets/images/water-buddy.png')} style={styles.mascot} resizeMode="contain" />
+      <Image
+        source={require("@/assets/images/water-buddy.png")}
+        style={styles.mascot}
+        resizeMode="contain"
+      />
 
       {/* Content */}
       <View style={styles.content}>
@@ -63,17 +67,17 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     shadowColor: colors.primaryDark,
     elevation: 5,
-    overflow: 'hidden',
-    justifyContent: 'center',
+    overflow: "hidden",
+    justifyContent: "center",
   },
   mascot: {
-    position: 'absolute',
+    position: "absolute",
     width: 175,
     height: 175,
     right: -45,
     bottom: -35,
     opacity: 0.1,
-    transform: [{ rotate: '12deg' }],
+    transform: [{ rotate: "12deg" }],
   },
   content: {
     padding: 25,
@@ -88,7 +92,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     letterSpacing: 1.6,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     color: colors.redDark,
   },
   name: {
@@ -99,14 +103,14 @@ const styles = StyleSheet.create({
   },
   level: {
     fontFamily: fonts.regular,
-    fontStyle: 'italic',
+    fontStyle: "italic",
     fontSize: 14,
     lineHeight: 20,
     color: colors.tabInactive,
   },
   button: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   buttonText: {

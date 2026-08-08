@@ -1,8 +1,8 @@
-import { colors } from '@/constants/colors';
-import { fonts } from '@/constants/typography';
-import { useEffect, useRef } from 'react';
-import { Animated, Image, StyleSheet, Text, View } from 'react-native';
-import { Polygon, Svg } from 'react-native-svg';
+import { colors } from "@/constants/colors";
+import { fonts } from "@/constants/typography";
+import { useEffect, useRef } from "react";
+import { Animated, Image, StyleSheet, Text, View } from "react-native";
+import { Polygon, Svg } from "react-native-svg";
 
 type Props = {
   size?: number;
@@ -15,8 +15,16 @@ export default function BuddyMascot({ size = 160, bubble }: Props) {
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
-        Animated.timing(floatAnim, { toValue: -10, duration: 1800, useNativeDriver: true }),
-        Animated.timing(floatAnim, { toValue: 0, duration: 1800, useNativeDriver: true }),
+        Animated.timing(floatAnim, {
+          toValue: -10,
+          duration: 1800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(floatAnim, {
+          toValue: 0,
+          duration: 1800,
+          useNativeDriver: true,
+        }),
       ]),
     ).start();
   }, []);
@@ -36,7 +44,7 @@ export default function BuddyMascot({ size = 160, bubble }: Props) {
 
       <Animated.View style={{ transform: [{ translateY: floatAnim }] }}>
         <Image
-          source={require('@/assets/images/water-buddy.png')}
+          source={require("@/assets/images/water-buddy.png")}
           style={{ width: size, height: size }}
           resizeMode="contain"
         />
@@ -47,11 +55,11 @@ export default function BuddyMascot({ size = 160, bubble }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   bubbleWrapper: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 8,
   },
   bubble: {
@@ -62,9 +70,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 48,
     borderWidth: 1,
-    borderColor: 'rgba(71, 169, 255, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: "rgba(71, 169, 255, 0.1)",
+    alignItems: "center",
+    justifyContent: "center",
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,
@@ -76,7 +84,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     color: colors.primary,
-    textAlign: 'center',
+    textAlign: "center",
     width: 193,
   },
 });

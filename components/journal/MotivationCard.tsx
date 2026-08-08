@@ -1,9 +1,9 @@
-import Flame from '@/assets/icons/flame.svg';
-import Star from '@/assets/icons/star-filled.svg';
-import WaterDrop from '@/assets/icons/water-drop.svg';
-import { colors } from '@/constants/colors';
-import { fonts } from '@/constants/typography';
-import { StyleSheet, Text, View } from 'react-native';
+import Flame from "@/assets/icons/flame.svg";
+import Star from "@/assets/icons/star-filled.svg";
+import WaterDrop from "@/assets/icons/water-drop.svg";
+import { colors } from "@/constants/colors";
+import { fonts } from "@/constants/typography";
+import { StyleSheet, Text, View } from "react-native";
 
 const ICON_MAP = {
   drop: WaterDrop,
@@ -12,35 +12,39 @@ const ICON_MAP = {
 };
 
 type Props = {
-  consumed_ml: number;
-  goal_ml: number;
+  consumedMl: number;
+  goalMl: number;
 };
 
-function getMessage(remaining: number): { title: string; body: string; icon: keyof typeof ICON_MAP } {
+function getMessage(remaining: number): {
+  title: string;
+  body: string;
+  icon: keyof typeof ICON_MAP;
+} {
   if (remaining <= 500) {
     return {
-      title: 'Almost there!',
+      title: "Almost there!",
       body: `Just ${remaining}ml to go. You're crushing it!`,
-      icon: 'flame',
+      icon: "flame",
     };
   }
   if (remaining <= 1000) {
     return {
-      title: 'Keep going!',
+      title: "Keep going!",
       body: `You're only ${remaining}ml away from reaching your goal today. Drink up!`,
-      icon: 'star',
+      icon: "star",
     };
   }
   return {
-    title: 'Stay Bubblier!',
+    title: "Stay Bubblier!",
     body: `You're only ${remaining}ml away from reaching your goal today. Drink up!`,
-    icon: 'drop',
+    icon: "drop",
   };
 }
 
-export default function MotivationCard({ consumed_ml, goal_ml }: Props) {
-  const remaining = Math.max(0, goal_ml - consumed_ml);
-  const progress = Math.min(consumed_ml / goal_ml, 1);
+export default function MotivationCard({ consumedMl, goalMl }: Props) {
+  const remaining = Math.max(0, goalMl - consumedMl);
+  const progress = Math.min(consumedMl / goalMl, 1);
 
   if (remaining === 0) return null;
 
@@ -66,12 +70,14 @@ export default function MotivationCard({ consumed_ml, goal_ml }: Props) {
 
         {/* Progress bar */}
         <View style={styles.progressTrack}>
-          <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+          <View
+            style={[styles.progressFill, { width: `${progress * 100}%` }]}
+          />
         </View>
 
         {/* Progress label */}
         <Text style={styles.progressLabel}>
-          {consumed_ml}ml / {goal_ml}ml
+          {consumedMl}ml / {goalMl}ml
         </Text>
       </View>
     </View>
@@ -84,7 +90,7 @@ const styles = StyleSheet.create({
     marginVertical: 25,
     borderRadius: 40,
     backgroundColor: colors.redLight,
-    overflow: 'hidden',
+    overflow: "hidden",
     shadowColor: colors.redDark,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
@@ -92,19 +98,19 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   watermark: {
-    position: 'absolute',
+    position: "absolute",
     right: -30,
     bottom: -30,
     opacity: 0.12,
-    transform: [{ rotate: '20deg' }],
+    transform: [{ rotate: "20deg" }],
   },
   content: {
     padding: 28,
     gap: 10,
   },
   titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   emoji: {
@@ -125,7 +131,7 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     height: 6,
-    backgroundColor: 'rgba(62, 0, 34, 0.15)',
+    backgroundColor: "rgba(62, 0, 34, 0.15)",
     borderRadius: 9999,
     marginTop: 4,
   },
