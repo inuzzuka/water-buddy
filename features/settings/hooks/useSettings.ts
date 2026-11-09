@@ -1,4 +1,5 @@
 import { useWaterBuddyContext } from "@/context/WaterBuddyContext";
+import { updateReminderNotifications } from "@/services/notificationService";
 import { useEffect, useMemo, useState } from "react";
 import { ReminderService } from "../services/ReminderService";
 import { SettingsService } from "../services/SettingsService";
@@ -43,7 +44,7 @@ export function useSettings() {
   });
 
   async function refreshSettings() {
-    if (!user?.id) return;
+    if (!user?.id) return null;
 
     const data = await service.getSettings(user.id);
 
@@ -70,6 +71,17 @@ export function useSettings() {
     setAppSettings({
       sound: settings?.sound !== 0,
     });
+
+    return {
+      enabled: reminders?.enabled === 1,
+      frequencyMinutes: reminders?.frequency_minutes ?? 60,
+      quietHours: {
+        enabled: reminders?.quiet_hours_enabled === 1,
+        start: reminders?.quiet_start ?? "22:00",
+        end: reminders?.quiet_end ?? "07:00",
+      },
+      sound: settings?.sound !== 0,
+    };
   }
 
   async function setDefaultQuickAddMl(amount: number) {
@@ -80,29 +92,26 @@ export function useSettings() {
     await service.saveDefaultQuickAdd(user.id, amount);
   }
 
-  async function saveReminder(enabled: boolean, frequency: number) {
+  async function saveAndSchedule(write: () => Promise<unknown>) {
     if (!user?.id) return;
-
-    await reminderService.saveReminder(user.id, enabled, frequency);
-
-    await refreshSettings();
+    await write();
+    const next = await refreshSettings();
+    if (next) await updateReminderNotifications(next);
   }
 
-  async function saveQuietHours(enabled: boolean, start: string, end: string) {
-    if (!user?.id) return;
+  const saveReminder = (enabled: boolean, frequency: number) => {
+    saveAndSchedule(() =>
+      reminderService.saveReminder(user!.id!, enabled, frequency),
+    );
+  };
 
-    await reminderService.saveQuietHours(user.id, enabled, start, end);
+  const saveQuietHours = (enabled: boolean, start: string, end: string) =>
+    saveAndSchedule(() =>
+      reminderService.saveQuietHours(user!.id!, enabled, start, end),
+    );
 
-    await refreshSettings();
-  }
-
-  async function saveSound(enabled: boolean) {
-    if (!user?.id) return;
-
-    await service.saveSound(user.id, enabled);
-
-    await refreshSettings();
-  }
+  const saveSound = (enabled: boolean) =>
+    saveAndSchedule(() => service.saveSound(user!.id!, enabled));
 
   useEffect(() => {
     refreshSettings();

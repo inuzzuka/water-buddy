@@ -1,12 +1,22 @@
-import { colors } from '@/constants/colors';
-import { fonts } from '@/constants/typography';
-import { useWaterBuddyContext } from '@/context/WaterBuddyContext';
-import { router } from 'expo-router';
-import { useEffect, useRef } from 'react';
-import { Animated, Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { colors } from "@/constants/colors";
+import { fonts } from "@/constants/typography";
+import { useWaterBuddyContext } from "@/context/WaterBuddyContext";
+import { useSettings } from "@/features/settings/hooks/useSettings";
+import { updateReminderNotifications } from "@/services/notificationService";
+import { router } from "expo-router";
+import { useEffect, useRef } from "react";
+import {
+  Animated,
+  Image,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 export default function SplashScreen() {
-  const { ready } = useWaterBuddyContext();
+  const { ready, user } = useWaterBuddyContext();
+  const { refreshSettings } = useSettings();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const dotsAnim = useRef(new Animated.Value(0)).current;
@@ -30,8 +40,16 @@ export default function SplashScreen() {
     // Dots animation
     Animated.loop(
       Animated.sequence([
-        Animated.timing(dotsAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
-        Animated.timing(dotsAnim, { toValue: 0, duration: 500, useNativeDriver: true }),
+        Animated.timing(dotsAnim, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(dotsAnim, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }),
       ]),
     ).start();
   }, []);
@@ -40,16 +58,38 @@ export default function SplashScreen() {
     if (!ready) return;
     // Wait a bit then navigate
     const timeout = setTimeout(() => {
-      router.replace('/(tabs)');
+      router.replace("/(tabs)");
     }, 2000);
     return () => clearTimeout(timeout);
   }, [ready]);
 
+  useEffect(() => {
+    if (!ready || !user?.id) return;
+
+    (async () => {
+      const s = await refreshSettings();
+      if (s?.enabled) await updateReminderNotifications(s);
+    })();
+  }, [ready, user?.id]);
+
   return (
-    <ImageBackground source={require('@/assets/images/background-1.png')} style={styles.container} resizeMode="cover">
-      <Animated.View style={[styles.mascotWrapper, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
+    <ImageBackground
+      source={require("@/assets/images/background-1.png")}
+      style={styles.container}
+      resizeMode="cover"
+    >
+      <Animated.View
+        style={[
+          styles.mascotWrapper,
+          { opacity: fadeAnim, transform: [{ scale: scaleAnim }] },
+        ]}
+      >
         <View style={styles.mascotCircle}>
-          <Image source={require('@/assets/images/water-buddy.png')} style={styles.mascot} resizeMode="contain" />
+          <Image
+            source={require("@/assets/images/water-buddy.png")}
+            style={styles.mascot}
+            resizeMode="contain"
+          />
         </View>
       </Animated.View>
 
@@ -85,12 +125,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     gap: 32,
   },
   mascotWrapper: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   mascotCircle: {
     width: 256,
@@ -98,8 +138,8 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
     backgroundColor: colors.white,
     padding: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 20 },
     shadowOpacity: 0.15,
@@ -107,14 +147,14 @@ const styles = StyleSheet.create({
     elevation: 12,
     // outer ring
     borderWidth: 8,
-    borderColor: 'rgba(71, 169, 255, 0.2)',
+    borderColor: "rgba(71, 169, 255, 0.2)",
   },
   mascot: {
     width: 240,
     height: 240,
   },
   textBlock: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: 6,
   },
   title: {
@@ -128,11 +168,11 @@ const styles = StyleSheet.create({
     color: colors.tabInactive,
   },
   dotsRow: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: 8,
   },
   dots: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
   },
   dot: {
@@ -146,7 +186,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     letterSpacing: 1.5,
     color: colors.tabInactive,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     marginTop: 4,
   },
 });

@@ -31,7 +31,7 @@ export default function Ritual() {
   return (
     <ScreenContent>
       <BuddyMascot
-        size={100}
+        size={125}
         mascotPosition="down"
         bubble={`${greeting}, ${firstName}! Time for a refreshing sip?`}
       />
